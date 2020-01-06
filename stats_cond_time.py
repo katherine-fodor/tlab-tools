@@ -247,7 +247,7 @@ ax2.plot(np.mean(S20_vort_int.P2VMom1[4:7,:],axis=0)/(np.mean(S20.z_enc[4:7])*B0
 ax2.plot(np.mean(NS42_vort_int_1.P1VMom1[-4:-1,:],axis=0)/(np.mean(NS42_1.z_enc[-4:-1])*B0)**(1./3.),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),ls='--')
 ax2.plot(np.mean(S20_vort_int.P1VMom1[4:7,:],axis=0)/(np.mean(S20.z_enc[4:7])*B0)**(1./3.),S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),ls='--')
 black_solid = mlines.Line2D([],[],c='k',label='Turbulent')
-black_dashed = mlines.Line2D([],[],c='k',ls='--',label='Non- \n turbulent')
+black_dashed = mlines.Line2D([],[],c='k',ls='--',label='Non-turbulent')
 black_dot = mlines.Line2D([],[],c='k',ls=':',label=r'$N_0^2z$')
 ax1.axhline(np.mean(NS42_1.z_if[-4:-1]/NS42_1.z_enc[-4:-1]),0,0.05,c=blues(0.5))
 ax1.axhline(np.mean(S20.z_if[4:7]/S20.z_enc[4:7]),0,0.05,c=blues(0.9))
