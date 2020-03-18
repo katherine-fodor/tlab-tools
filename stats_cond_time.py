@@ -17,7 +17,7 @@ rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 rc('lines', linewidth=2)
 
-opath = '/home/mpim/m300551/Figures/JAS2020/'
+opath = '/home/mpim/m300551/Figures/JAS2020/Vertical/'
 
 #######################################################################
 # Constants
@@ -203,7 +203,7 @@ rho_bw_zif_S20_turb =  (np.array(S20_vort_p2_v1_zif)-np.array(S20_vort_p2_s1_mea
 
 blues = matplotlib.cm.get_cmap('Blues')
 
-f, (ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,figsize=(5,10))
 ax1.grid(True,linewidth=1.5)
 ax2.grid(True,linewidth=1.5)
 ax1.tick_params(bottom=False,left=False)
@@ -224,11 +224,11 @@ ax2.set_xlabel(r'$z_\mathrm{enc}/L_0$')
 ax2.set_ylabel(r'$(a_\mathrm{T})_{z_{i,f}}$')
 ax2.set_title(r'(b)',fontsize=24,loc='left')
 ax1.legend(loc='lower left',fontsize=24,handlelength=1)
-plt.tight_layout()
+plt.tight_layout(w_pad=2)
 plt.savefig(opath+'Fig5.pdf',bbox_inches='tight')
 plt.show()
 
-f, (ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,figsize=(5,10))
 ax1.grid(True,linewidth=1.5)
 ax2.grid(True,linewidth=1.5)
 ax1.tick_params(bottom=False,left=False)
@@ -262,7 +262,7 @@ ax2.set_title(r'(b)',fontsize=24,loc='left')
 leg1 = ax1.legend(loc='upper left',fontsize=18,borderaxespad=0.1,handlelength=1)
 leg2 = ax1.legend(handles=[black_solid,black_dashed,black_dot],loc='lower right',fontsize=18,borderaxespad=0.1,handlelength=1,labelspacing=0.3)
 ax1.add_artist(leg1)
-plt.tight_layout()
+plt.tight_layout(w_pad=2)
 plt.savefig(opath+'Fig7.pdf',bbox_inches='tight')
 plt.show()
 
@@ -314,7 +314,7 @@ plt.savefig(opath+'Fig8.pdf',bbox_inches='tight')
 plt.show()
 
 
-f, (ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,figsize=(5,10))
 ax1.grid(True,linewidth=1.5)
 ax2.grid(True,linewidth=1.5)
 ax1.tick_params(bottom=False,left=False)
@@ -336,7 +336,7 @@ ax2.set_xlabel(r'$z_\mathrm{enc}/L_0$')
 ax2.set_ylabel(r'$-((\rho_{bw})_\mathrm{T})_{z_{i,f}}$')
 ax2.set_title('(b)',fontsize=24,loc='left')
 ax2.legend(loc='best',fontsize=24,handlelength=1,borderaxespad=0.1)
-plt.tight_layout()
+plt.tight_layout(w_pad=2)
 plt.savefig(opath+'Fig9.pdf',bbox_inches='tight')
 plt.show()
 

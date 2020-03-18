@@ -15,7 +15,7 @@ rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 rc('lines', linewidth=2)
 
-opath = '/home/mpim/m300551/Figures/JAS2020/'
+opath = '/home/mpim/m300551/Figures/JAS2020/Vertical/'
 
 path_1 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re042/2560x576x2560/'
 path_2 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re042/2560x704x2560/'
@@ -189,22 +189,22 @@ z_if = np.concatenate((NS42_1.z_if/NS42_1.z_enc,NS42_2.z_if/NS42_2.z_enc,NS42_3.
 
 blues = matplotlib.cm.get_cmap('Blues')
 
-f, (ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,figsize=(5,10),sharex='all')
 ax1.grid(True,linewidth=1.5)
 ax2.grid(True,linewidth=1.5)
 ax1.tick_params(bottom=False,left=False)
 ax2.tick_params(bottom=False,left=False)
 ax1.set_ylim(1,1.6)
 ax1.set_xlim(15,30)
+ax1.set_xticks([15,20,25,30])
 ax2.set_ylim(-2,0)
-ax2.set_xlim(15,30)
 ax1.plot(time[1:-1],y_maxit_vort_NS42,c=blues(0.5))
 ax1.plot(S20.z_enc[1:-1]/L_0,y_maxit_vort_S20,c=blues(0.9))
 ax1.plot(S20.z_enc[1:-1]/L_0,runningmean(S20.z_ig/S20.z_enc,1),c=blues(0.9),ls=':',label=r'$z_{i,g}/z_\mathrm{enc}$')
 ax1.plot(time[1:-1],runningmean(z_if,1),c=blues(0.5),ls=':',label=r'$z_{i,f}/z_\mathrm{enc}$')
 ax2.plot(time[1:-1],maxvort_it_NS42,c=blues(0.5),label=r'$Fr_0=0$')
 ax2.plot(S20.z_enc[1:-1]/L_0,maxvort_it_S20,c=blues(0.9),label=r'$Fr_0=20$')
-ax1.set_xlabel(r'$z_\mathrm{enc}/L_0$')
+#ax1.set_xlabel(r'$z_\mathrm{enc}/L_0$')
 ax2.set_xlabel(r'$z_\mathrm{enc}/L_0$')
 ax1.set_ylabel(r'$z_\mathrm{saddle}/z_\mathrm{enc}$')
 ax2.set_ylabel(r'$\mathrm{log}_{10}(\omega^2/\omega_0^2)$')
@@ -212,7 +212,7 @@ ax1.set_title('(a)',fontsize=24,loc='left')
 ax2.set_title('(b)',fontsize=24,loc='left')
 ax1.legend(loc='best',fontsize=24,handlelength=1,borderaxespad=0.2)
 ax2.legend(loc='best',fontsize=24,handlelength=1)
-plt.tight_layout()
+plt.tight_layout(w_pad=2)
 plt.savefig(opath+'Fig3.pdf',bbox_inches='tight')
 plt.show()
 

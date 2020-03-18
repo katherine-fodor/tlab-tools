@@ -16,7 +16,7 @@ rc('font', size=24)
 rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 
-opath = '/home/mpim/m300551/Figures/JAS2020/'
+opath = '/home/mpim/m300551/Figures/JAS2020/Vertical/'
 colourmap_path = '/home/mpim/m300551/local/ScientificColourMaps5/'
 
 path_117 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re117/'
@@ -189,7 +189,7 @@ lapaz_map = LinearSegmentedColormap.from_list('lapaz',lapaz_data)
 #####################################################################
 # Plot
 
-f, (ax1,ax2) = plt.subplots(1,2,sharex='all',sharey='all',figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,sharex='all',sharey='all',figsize=(5,10))
 ax1.tick_params(bottom=True,top=True,left=True,right=True)
 ax2.tick_params(bottom=True,top=True,left=True,right=True)
 ax1.set_xlim(-4,2) 
@@ -206,19 +206,20 @@ ax1.scatter(maxvort_NS25,NS25.y/np.mean(NS25.z_enc),5,color='k',marker='.')
 ax1.scatter((maxvort_NS25[maxit_vort_NS25-1]+maxvort_NS25[maxit_vort_NS25])/2,NS25.y[maxit_vort_NS25]/np.mean(NS25.z_enc),100,color='k',marker='*')
 ax1.axhline(np.mean(NS25.z_ig/NS25.z_enc),0,0.05,color='C1',linewidth=2)
 ax1.axhline(np.mean(NS25.z_if/NS25.z_enc),0,0.05,color='C1',linewidth=2)
-ax1.set_xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
+#ax1.set_xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
 ax2.set_xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
 ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax2.set_ylabel(r'$z/z_\mathrm{enc}$')
 ax2.set_title(r'(b) $Re_0=117$',fontsize=24,loc='left')
 ax1.set_title(r'(a) $Re_0=25$',fontsize=24,loc='left')
-cbar_ax = f.add_axes([0.3,0.1,0.5,0.03])
+cbar_ax = f.add_axes([0.35,0.1,0.5,0.02])
 cbar = f.colorbar(cs1,cax=cbar_ax,ticks=[0,0.1,0.2,0.3,0.4],orientation='horizontal')
-plt.tight_layout(rect=[0,0.1,1,1],h_pad=2)
+plt.tight_layout(rect=[0,0.1,1,1],w_pad=2)
 plt.savefig(opath+'Fig11.pdf',bbox_inches='tight')
 plt.show()
 
 
-f, (ax1,ax2) = plt.subplots(1,2,sharex='all',sharey='all',figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,sharex='all',sharey='all',figsize=(5,10))
 ax1.tick_params(bottom=True,top=True,left=True,right=True)
 ax2.tick_params(bottom=True,top=True,left=True,right=True)
 ax1.set_xlim(-4,2) 
@@ -236,13 +237,14 @@ ax2.scatter((maxvort_S20[maxit_vort_S20-1]+maxvort_S20[maxit_vort_S20])/2,S20_42
 ax2.axhline(np.mean(S20_42.z_ig/S20_42.z_enc),0,0.05,color='C1',linewidth=2)
 ax2.axhline(np.mean(S20_42.z_if/S20_42.z_enc),0,0.05,color='C1',linewidth=2)
 ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
-ax1.set_xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
+ax2.set_ylabel(r'$z/z_\mathrm{enc}$')
+#ax1.set_xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
 ax2.set_xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
 ax1.set_title(r'(a)$Fr_0=0$',fontsize=24,loc='left')
 ax2.set_title(r'(b)$Fr_0=20$',fontsize=24,loc='left')
-cbar_ax = f.add_axes([0.3,0.1,0.5,0.03])
+cbar_ax = f.add_axes([0.35,0.1,0.5,0.02])
 cbar = f.colorbar(cs1,cax=cbar_ax,ticks=[0,0.1,0.2,0.3,0.4],orientation='horizontal')
-plt.tight_layout(rect=[0,0.1,1,1],h_pad=2)
+plt.tight_layout(rect=[0,0.1,1,1],w_pad=2)
 plt.savefig(opath+'Fig1.pdf',bbox_inches='tight')
 plt.show()
 
