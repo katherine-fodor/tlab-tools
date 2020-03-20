@@ -17,6 +17,7 @@ rc('font', size=20)
 
 opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re117/5120x1024x5120/'
 opath_42 = '/scratch/local1/m300551/ForKatherine/plots/3D/Re042/'
+opath_PV = '/scratch/local1/m300551/ForKatherine/plots/3D/Re042/PV/'
 colourmap_path = '/home/mpim/m300551/local/ScientificColourMaps5/'
 
 path_117 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re117/'
@@ -478,6 +479,35 @@ plt.colorbar(cs3,ax=ax3)
 plt.colorbar(cs4,ax=ax4)
 plt.tight_layout()
 plt.savefig(opath_42+'pdfs_vort_pv_subplots_S20_S0_timeavg_interpxy.pdf')
+plt.show()
+
+f, (ax1,ax2) = plt.subplots(2,1,sharex='all',sharey='all',figsize=(5,10))
+ax1.tick_params(bottom=True,top=True,left=True,right=True)
+ax2.tick_params(bottom=True,top=True,left=True,right=True)
+ax2.set_xlim(-7,2)
+ax1.set_ylim(0,1.6)
+ax2.set_xticks([-6,-4,-2,0,2])
+cs1 = ax1.contourf(NS42_pvpdf_x_mean,NS42_pvpdf_y_mean,NS42_pvpdf_interp_runmean,cmap='viridis',levels=np.linspace(0,0.24,9))
+ax1.scatter(maxpv_NS42[:maxit_pv_NS42],NS42_3.y[:maxit_pv_NS42]/np.mean(NS42.z_enc),10,color='k',marker='.')
+ax1.scatter(maxpv_NS42[maxit_pv_NS42:],NS42_3.y[maxit_pv_NS42:]/np.mean(NS42.z_enc),10,color='k',marker='.')
+ax1.scatter((maxpv_NS42[maxit_pv_NS42-1]+maxpv_NS42[maxit_pv_NS42])/2,NS42_3.y[maxit_pv_NS42]/np.mean(NS42.z_enc),100,color='k',marker='*')
+ax1.axhline(np.mean(NS42.z_ig/NS42.z_enc),0,0.05,color='C1',linewidth=2)
+ax1.axhline(np.mean(NS42.z_if/NS42.z_enc),0,0.05,color='C1',linewidth=2)
+cs2 = ax2.contourf(S20_42_pvpdf_x_mean,S20_42_pvpdf_y_mean,S20_pvpdf_interp_runmean,cmap='viridis',levels=np.linspace(0,0.24,9))
+ax2.scatter(maxpv_S20[:maxit_pv_S20],S20_42.y[:maxit_pv_S20]/np.mean(S20_42.z_enc),10,color='k',marker='.')
+ax2.scatter(maxpv_S20[maxit_pv_S20:],S20_42.y[maxit_pv_S20:]/np.mean(S20_42.z_enc),10,color='k',marker='.')
+ax2.scatter((maxpv_S20[maxit_pv_S20-1]+maxpv_S20[maxit_pv_S20])/2,S20_42.y[maxit_pv_S20]/np.mean(S20_42.z_enc),100,color='k',marker='*')
+ax2.axhline(np.mean(S20_42.z_ig/S20_42.z_enc),0,0.05,color='C1',linewidth=2)
+ax2.axhline(np.mean(S20_42.z_if/S20_42.z_enc),0,0.05,color='C1',linewidth=2)
+ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax2.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax2.set_xlabel(r'$\log_{10}(\Pi^2/\Pi_0^2)$')
+ax1.set_title(r'(a)$Fr_0=0$',fontsize=20,loc='left')
+ax2.set_title(r'(b)$Fr_0=20$',fontsize=20,loc='left')
+cbar_ax = f.add_axes([0.1,0.07,0.85,0.02])
+cbar = f.colorbar(cs1,cax=cbar_ax,orientation='horizontal')
+plt.tight_layout(rect=[0,0.1,1,1],w_pad=2)
+plt.savefig(opath_PV+'pdfs_pv_subplots_S20_S0_timeavg_interpxy.pdf',bbox_inches='tight')
 plt.show()
 
 f, (ax1,ax2) = plt.subplots(1,2,sharex='all',sharey='all',figsize=(10,5))

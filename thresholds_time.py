@@ -18,6 +18,7 @@ rc('lines',linewidth=2)
 
 colourmap_path = '/home/mpim/m300551/local/ScientificColourMaps5/'
 opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re042/'
+opath_PV = '/scratch/local1/m300551/ForKatherine/plots/3D/Re042/PV/'
 opath_117 = '/scratch/local1/m300551/ForKatherine/plots/3D/Re117/5120x1024x5120/'
 blues = matplotlib.cm.get_cmap('Blues')
 ######################################################################
@@ -604,6 +605,32 @@ ax4.axvline(-2.65,0,S20.y[-1]/np.mean(S20.z_enc),color='k',linestyle='--')
 plt.tight_layout(rect=[0,0.1,1,1])
 plt.savefig(opath+'area_frac_threshold_S20_S0_timmean.pdf')
 plt.show()
+
+f, (ax1,ax2) = plt.subplots(2,1,sharex='all',sharey='all',figsize=(5,10))
+ax1.tick_params(bottom=True,top=True,left=True,right=True)
+ax2.tick_params(bottom=True,top=True,left=True,right=True)
+ax1.set_ylim(1,1.5)
+ax2.set_xlim(np.log10(pvthresholds[0]/(cb*ceps*N**6*42**2*(np.mean(NS42.z_enc)/L0)**(-4./3.))),np.log10(pvthresholds[-1]/(cb*ceps*N**6*42**2*(np.mean(S20.z_enc)/L0)**(-4./3.))))
+cs1 = ax1.contourf(np.log10(pvthresholds/(cb*ceps*N**6*42**2*(np.mean(NS42.z_enc)/L0)**(-4./3.))),NS42.y/np.mean(NS42.z_enc),pv_turb_area_fracs_NS42_timmean,cmap='viridis',levels=np.arange(0,1.1,0.1))
+cs2 = ax2.contourf(np.log10(pvthresholds/(cb*ceps*N**6*42**2*(np.mean(S20.z_enc)/L0)**(-4./3.))),S20.y/np.mean(S20.z_enc),pv_turb_area_fracs_S20_timmean,cmap='viridis',levels=np.arange(0,1.1,0.1))
+cbar_ax = f.add_axes([0.15,0.1,0.8,0.02])
+cbar = f.colorbar(cs1,cax=cbar_ax,orientation='horizontal')
+ax1.axhline(np.mean(NS42.z_ig)/np.mean(NS42.z_enc),0,0.05,color='k',linewidth=2)
+ax1.axhline(np.mean(NS42.z_if)/np.mean(NS42.z_enc),0,0.05,color='k',linewidth=2)
+ax2.axhline(np.mean(S20.z_ig)/np.mean(S20.z_enc),0,0.05,color='k',linewidth=2)
+ax2.axhline(np.mean(S20.z_if)/np.mean(S20.z_enc),0,0.05,color='k',linewidth=2)
+cbar.ax.set_xlabel(r'$a_\mathrm{T}$')
+ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax2.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax2.set_xlabel(r'$\log_{10}(\Pi^2_\mathrm{th}/\Pi_0^2)$')
+ax1.set_title('(a) $Fr_0=0$',loc='left',fontsize=20)
+ax2.set_title('(b) $Fr_0=20$',loc='left',fontsize=20)
+ax1.axvline(-1.99,0,NS42.y[-1]/np.mean(NS42.z_enc),color='k',linestyle='--')
+ax2.axvline(-2.65,0,S20.y[-1]/np.mean(S20.z_enc),color='k',linestyle='--')
+plt.tight_layout(rect=[0,0.15,1,1])
+plt.savefig(opath_PV+'area_frac_pv_threshold_S20_S0_timmean.pdf',bbox_inches='tight')
+plt.show()
+
 
 f, (ax1,ax2) = plt.subplots(1,2,sharex='all',sharey='all',figsize=(10,5))
 ax1.tick_params(bottom=True,top=True,left=True,right=True)
