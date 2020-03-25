@@ -12,11 +12,12 @@ from matplotlib import rc
 rc('text', usetex=True)
 rc('text.latex', preamble=r"\usepackage{fourier}")
 rc('font', family='serif')
-rc('font', size=20)
+rc('font', size=24)
 rc('axes', linewidth=1.5)
 rc('lines', linewidth=2)
 
 opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re042/'
+opath_PV = '/scratch/local1/m300551/ForKatherine/plots/3D/Re042/PV/'
 
 #######################################################################
 # Constants
@@ -434,17 +435,18 @@ plt.tight_layout()
 plt.savefig(opath+'area_frac_height_time_S20_S0_zif_vort.pdf',bbox_inches='tight')
 plt.show()
 
-f, (ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,figsize=(5,10))
 ax1.grid(True)
 ax2.grid(True)
 ax1.set_ylim(0,1.6)
 ax2.set_ylim(0.4,1)
+ax2.set_xlim(15,30)
 ax1.plot(np.mean(NS42_pv_int_1.int2[-4:-1,:],axis=0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=oranges(0.5),label=r'$Fr_0=0$')
 ax1.plot(np.mean(S20_pv_int.int2[4:7,:],axis=0),S20.y/np.mean(S20.z_enc[4:7]),c=oranges(0.9),label=r'$Fr_0=20$')
 # ax2.plot(time[1:-1],runningmean(NS42_pv_turbareafrac_zig,1),'C2')
 # ax2.plot(S20.z_enc[1:-1]/L0,runningmean(S20_pv_turbareafrac_zig,1),'C4')
-ax2.plot(time[1:-1],runningmean(NS42_pv_turbareafrac_zif,1),c=oranges(0.5))
-ax2.plot(S20.z_enc[1:-1]/L0,runningmean(S20_pv_turbareafrac_zif,1),c=oranges(0.9))
+ax2.plot(time[1:-1],runningmean(NS42_pv_turbareafrac_zif,1),c=oranges(0.5),label=r'$Fr_0=0$')
+ax2.plot(S20.z_enc[1:-1]/L0,runningmean(S20_pv_turbareafrac_zif,1),c=oranges(0.9),label=r'$Fr_0=20$')
 ax1.axhline(np.mean(NS42_1.z_if[-4:-1]/NS42_1.z_enc[-4:-1]),0,0.05,c=oranges(0.5))
 ax1.axhline(np.mean(S20.z_if[4:7]/S20.z_enc[4:7]),0,0.05,c=oranges(0.9))
 ax1.set_xlabel(r'$a_\mathrm{T}$')
@@ -452,10 +454,10 @@ ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
 ax1.set_title(r'(a)',fontsize=20,loc='left')
 ax2.set_xlabel(r'$z_\mathrm{enc}/L_0$')
 ax2.set_ylabel(r'$(a_\mathrm{T})_{z_{i,f}}$')
-ax2.set_title(r'(b)',fontsize=20,loc='left')
-ax1.legend(loc='lower left',fontsize=20)
+ax2.set_title(r'(b)',fontsize=24,loc='left')
+ax2.legend(loc='lower left',fontsize=24,borderaxespad=0.2)
 plt.tight_layout()
-plt.savefig(opath+'area_frac_height_time_S20_S0_zif_PV.pdf')
+plt.savefig(opath_PV+'area_frac_height_time_S20_S0_zif_PV.pdf')
 plt.show()
 
 

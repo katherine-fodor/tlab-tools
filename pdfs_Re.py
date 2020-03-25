@@ -13,7 +13,7 @@ from scipy import interpolate
 rc('text', usetex=True)
 rc('text.latex', preamble=r"\usepackage{fourier}")
 rc('font', family='serif')
-rc('font', size=20)
+rc('font', size=24)
 
 opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re117/5120x1024x5120/'
 opath_42 = '/scratch/local1/m300551/ForKatherine/plots/3D/Re042/'
@@ -502,10 +502,10 @@ ax2.axhline(np.mean(S20_42.z_if/S20_42.z_enc),0,0.05,color='C1',linewidth=2)
 ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
 ax2.set_ylabel(r'$z/z_\mathrm{enc}$')
 ax2.set_xlabel(r'$\log_{10}(\Pi^2/\Pi_0^2)$')
-ax1.set_title(r'(a)$Fr_0=0$',fontsize=20,loc='left')
-ax2.set_title(r'(b)$Fr_0=20$',fontsize=20,loc='left')
-cbar_ax = f.add_axes([0.1,0.07,0.85,0.02])
-cbar = f.colorbar(cs1,cax=cbar_ax,orientation='horizontal')
+ax1.set_title(r'(a)$Fr_0=0$',fontsize=24,loc='left')
+ax2.set_title(r'(b)$Fr_0=20$',fontsize=24,loc='left')
+cbar_ax = f.add_axes([0.35,0.07,0.5,0.02])
+cbar = f.colorbar(cs1,cax=cbar_ax,orientation='horizontal',ticks=[0,0.06,0.12,0.18,0.24])
 plt.tight_layout(rect=[0,0.1,1,1],w_pad=2)
 plt.savefig(opath_PV+'pdfs_pv_subplots_S20_S0_timeavg_interpxy.pdf',bbox_inches='tight')
 plt.show()
