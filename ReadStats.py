@@ -45,6 +45,7 @@ class Statistics:
         self.Tke_t = datafile_avg.variables['Tke_t'][:,:] # time rate of change of TKE
         
         self.Eta   = datafile_avg.variables['Eta'  ][:,:] # Kolmogorov scale
+        self.U_fric = datafile_avg.variables['FrictionVelocity'][:] 
         
         # avg1s statistics 
         path_avg1s = path_avg.replace('avg','avg1s')	  # assume that name is the same except for avg -> avg1s	
