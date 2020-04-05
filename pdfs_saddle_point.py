@@ -22,6 +22,7 @@ path_2 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re042/2560x704x2560/'
 path_3 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re042/2560x896x2560/'
 path_S20 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re042/3072x960x4608-S20/'
 path_S15 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1536x576x1536-S15/'
+path_S10 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1280x512x1280-S10/'
 ##########################################################################
 # Constants
 
@@ -55,6 +56,7 @@ NS42_3 = Statistics(path_3+'stats/pdftimes/avg83000-127500.nc')
 
 S20 = Statistics(path_S20+'stats/pdftimes/avg42000-148000.nc')
 S15 = Statistics(path_S15+'stats/pdftimes/avg15000-92000.nc')
+S10 = Statistics(path_S10+'stats/pdftimes/avg13000-84000.nc')
 
 z_enc_NS42 = np.concatenate((NS42_1.z_enc,NS42_2.z_enc,NS42_3.z_enc))
 
@@ -69,18 +71,22 @@ vortlist_S20 = [path_S20+'stats/pdfs/pdf42000.LnEnstrophyW_iW_i',path_S20+'stats
 
 vortlist_S15 = [path_S15+'stats/pdfs/pdf15000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf18000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf24000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf27000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf31000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf35000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf40000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf45000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf50000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf56000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf63000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf69000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf76000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf92000.LnEnstrophyW_iW_i']
 
+vortlist_S10 = [path_S10+'stats/pdfs/pdf13000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf16000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf18000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf24000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf32000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf37000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf41000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf46000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf52000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf58000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf64000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf70000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf77000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i']
+
 NS42_vortpdf_1 = Pdfs(vortlist_1,path_1+'y.dat')
 NS42_vortpdf_2 = Pdfs(vortlist_2,path_2+'y.dat')
 NS42_vortpdf_3 = Pdfs(vortlist_3,path_3+'y.dat')
 
 vortpdf_S20 = Pdfs(vortlist_S20,path_S20+'y.dat')
 vortpdf_S15 = Pdfs(vortlist_S15,path_S15+'y.dat')
+vortpdf_S10 = Pdfs(vortlist_S10,path_S10+'y.dat')
 
 # Create grid on which to interpolate pdfs
 
 NS42_vortpdf_interp_data = Pdfs([path_3+'stats/pdfs/pdf102500.LnEnstrophyW_iW_i'],path_3+'y.dat')
 S20_vortpdf_interp_data = Pdfs([path_S20+'stats/pdfs/pdf75000.LnEnstrophyW_iW_i'],path_S20+'y.dat')
 S15_vortpdf_interp_data = Pdfs([path_S15+'stats/pdfs/pdf76000.LnEnstrophyW_iW_i'],path_S15+'y.dat')
+S10_vortpdf_interp_data = Pdfs([path_S10+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i'],path_S10+'y.dat')
 
 # Interpolate pdfs in y-direction
 
@@ -123,7 +129,11 @@ for n in range(len(vortlist_S15)):
     for j in range(S15.y_len):
         S15_vortpdf_interp[n,j,:] = np.interp(S15_vortpdf_interp_data.xy[0,0,j,:],vortpdf_S15.xy[0,n,j,:],vortpdf_S15.pdf[n,j,:-2])
 
-
+S10_vortpdf_interp = np.zeros((len(vortlist_S10),S10.y_len,vortpdf_S10.nb))
+for n in range(len(vortlist_S10)):
+    for j in range(S10.y_len):
+        S10_vortpdf_interp[n,j,:] = np.interp(S10_vortpdf_interp_data.xy[0,0,j,:],vortpdf_S10.xy[0,n,j,:],vortpdf_S10.pdf[n,j,:-2])
+        
 # Running mean of pdfs
 
 NS42_vortpdf_interp_runmean = np.zeros((np.ma.size(NS42_vortpdf_interp,0)-2,NS42_3.y_len,NS42_vortpdf_1.nb))
@@ -138,6 +148,10 @@ S15_vortpdf_interp_runmean = np.zeros((np.ma.size(S15_vortpdf_interp,0)-2,S15.y_
 for n in range(1,np.ma.size(S15_vortpdf_interp,0)-1):
     S15_vortpdf_interp_runmean[n-1,:,:] = np.mean(S15_vortpdf_interp[n-1:n+2,:,:],axis=0)
 
+S10_vortpdf_interp_runmean = np.zeros((np.ma.size(S10_vortpdf_interp,0)-2,S10.y_len,vortpdf_S10.nb))
+for n in range(1,np.ma.size(S10_vortpdf_interp,0)-1):
+    S10_vortpdf_interp_runmean[n-1,:,:] = np.mean(S10_vortpdf_interp[n-1:n+2,:,:],axis=0)    
+    
 # Find where pdf has a maximum at each height
 
 maxvort_NS42 = np.zeros((np.ma.size(NS42_vortpdf_interp_runmean,0),NS42_3.y_len))
@@ -163,6 +177,14 @@ for t in range(0,np.ma.size(S15_vortpdf_interp_runmean,0)):
         maxvort_S15[t,j] = S15_vortpdf_interp_data.xy[0,0,j,np.argmax(S15_vortpdf_interp_runmean[t,j,:])]
         maxprob_vort_S15[t,j] = np.max(S15_vortpdf_interp_runmean[t,j,:])
 maxvort_S15 = np.log10(np.exp(maxvort_S15)/(ceps*B0/nu_15))
+
+maxvort_S10 = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
+maxprob_vort_S10 = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
+for t in range(0,np.ma.size(S10_vortpdf_interp_runmean,0)):
+    for j in range(0,S10.y_len):
+        maxvort_S10[t,j] = S10_vortpdf_interp_data.xy[0,0,j,np.argmax(S10_vortpdf_interp_runmean[t,j,:])]
+        maxprob_vort_S10[t,j] = np.max(S10_vortpdf_interp_runmean[t,j,:])
+maxvort_S10 = np.log10(np.exp(maxvort_S10)/(ceps*B0/nu_15))
 
 # Find jump in maxvort
 
@@ -199,6 +221,17 @@ for t in range(0,np.ma.size(S15_vortpdf_interp_runmean,0)):
     y_maxit_vort_S15[t] = S15.y[int(maxit_vort_S15[t])]/S15.z_enc[t+1]
     maxvort_it_S15[t] = (maxvort_S15[t,int(maxit_vort_S15[t]-1)]+maxvort_S15[t,int(maxit_vort_S15[t])])/2
 
+maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+y_maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+maxvort_it_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+for t in range(0,np.ma.size(S10_vortpdf_interp_runmean,0)):
+    for j in range(S10.z_enc_arg[t],S10.y_len):
+        if np.abs(maxvort_S10[t,j+1])-np.abs(maxvort_S10[t,j]) > 0.1:
+            maxit_vort_S10[t] = j+1
+            break
+    y_maxit_vort_S10[t] = S10.y[int(maxit_vort_S10[t])]/S10.z_enc[t+1]
+    maxvort_it_S10[t] = (maxvort_S10[t,int(maxit_vort_S10[t]-1)]+maxvort_S10[t,int(maxit_vort_S10[t])])/2
+    
 # Find saddle as point where maxprob has a minimum
 
 y_vort_NS42_saddle = np.zeros(np.ma.size(NS42_vortpdf_interp_runmean,0))
@@ -222,6 +255,13 @@ for t in range(np.ma.size(S15_vortpdf_interp_runmean,0)):
     maxvort_S15_saddle[t] = maxvort_S15[t,np.argmin(np.abs(y_vort_S15_saddle[t]-S15.y))]
     y_vort_S15_saddle[t] = y_vort_S15_saddle[t]/S15.z_enc[t+1]
 
+y_vort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+maxvort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+for t in range(np.ma.size(S10_vortpdf_interp_runmean,0)):
+    y_vort_S10_saddle[t] = S10.y[np.argmin(maxprob_vort_S10[t,:-100])]
+    maxvort_S10_saddle[t] = maxvort_S10[t,np.argmin(np.abs(y_vort_S10_saddle[t]-S10.y))]
+    y_vort_S10_saddle[t] = y_vort_S10_saddle[t]/S10.z_enc[t+1]
+    
 # concatenate over time
 
 time = np.concatenate((NS42_1.z_enc/L_0,NS42_2.z_enc/L_0,NS42_3.z_enc/L_0))
@@ -242,13 +282,16 @@ ax1.set_xlim(15,30)
 ax1.set_xticks([15,20,25,30])
 ax2.set_ylim(-2,0)
 ax1.plot(time[1:-1],y_maxit_vort_NS42,c=blues(0.5))
+ax1.plot(S10.z_enc[1:-1]/L_0,y_maxit_vort_S10,c=blues(0.6))
 ax1.plot(S15.z_enc[1:-1]/L_0,y_maxit_vort_S15,c=blues(0.7))
 ax1.plot(S20.z_enc[1:-1]/L_0,y_maxit_vort_S20,c=blues(0.9))
 ax1.plot(S20.z_enc[1:-1]/L_0,runningmean(S20.z_ig/S20.z_enc,1),c=blues(0.9),ls=':',label=r'$z_{i,g}/z_\mathrm{enc}$')
 ax1.plot(S15.z_enc[1:-1]/L_0,runningmean(S15.z_ig/S15.z_enc,1),c=blues(0.7),ls=':',label=r'$z_{i,g}/z_\mathrm{enc}$')
+ax1.plot(S10.z_enc[1:-1]/L_0,runningmean(S10.z_if/S10.z_enc,1),c=blues(0.6),ls=':',label=r'$z_{i,f}/z_\mathrm{enc}$')
 ax1.plot(time[1:-1],runningmean(z_if,1),c=blues(0.5),ls=':',label=r'$z_{i,f}/z_\mathrm{enc}$')
 ax2.plot(time[1:-1],maxvort_it_NS42,c=blues(0.5),label=r'$Fr_0=0$')
-ax2.plot(time[1:-1],maxvort_it_S15,c=blues(0.7),label=r'$Fr_0=15$')
+ax2.plot(S10.z_enc[1:-1]/L_0,maxvort_it_S10,c=blues(0.6),label=r'$Fr_0=10$')
+ax2.plot(S15.z_enc[1:-1]/L_0,maxvort_it_S15,c=blues(0.7),label=r'$Fr_0=15$')
 ax2.plot(S20.z_enc[1:-1]/L_0,maxvort_it_S20,c=blues(0.9),label=r'$Fr_0=20$')
 ax1.set_xlabel(r'$z_\mathrm{enc}/L_0$')
 ax2.set_xlabel(r'$z_\mathrm{enc}/L_0$')
