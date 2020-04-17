@@ -64,8 +64,10 @@ S20_42_s1gradpdf = Pdfs([path_42+'3072x960x4608-S20/stats/pdfs/pdf66000.LnGradie
 
 NS42_vortpdf_interp_data = Pdfs([path_42+'2560x896x2560/stats/pdfs/pdf102500.LnEnstrophyW_iW_i'],path_42+'2560x896x2560/y.dat')
 NS42_pvpdf_interp_data = Pdfs([path_42+'2560x896x2560/stats/pdfs/pdf102500.LnPotentialEnstrophy'],path_42+'2560x896x2560/y.dat')
+NS42_s1gradpdf_interp_data = Pdfs([path_42+'2560x576x2560/stats/pdfs/pdf41500.LnGradientG_iG_i'],path_42+'2560x576x2560/y.dat')
 S20_vortpdf_interp_data = Pdfs([path_42+'3072x960x4608-S20/stats/pdfs/pdf75000.LnEnstrophyW_iW_i'],path_42+'3072x960x4608-S20/y.dat')
 S20_pvpdf_interp_data = Pdfs([path_42+'3072x960x4608-S20/stats/pdfs/pdf75000.LnPotentialEnstrophy'],path_42+'3072x960x4608-S20/y.dat')
+S20_s1gradpdf_interp_data = Pdfs([path_42+'3072x960x4608-S20/stats/pdfs/pdf75000.LnGradientG_iG_i'],path_42+'3072x960x4608-S20/y.dat')
 
 NS117_vortpdf_interp_data = Pdfs([path_117+'5120x1024x5120/stats/pdfs/pdf149000.LnEnstrophyW_iW_i'],path_117+'5120x1024x5120/y.dat')
 NS117_pvpdf_interp_data = Pdfs([path_117+'5120x1024x5120/stats/pdfs/pdf149000.LnPotentialEnstrophy'],path_117+'5120x1024x5120/y.dat')
@@ -96,6 +98,11 @@ for n in range(3):
     for j in range(NS42_3.y_len):
         NS42_pvpdf_interp[n,j,:] = np.interp(NS42_pvpdf_interp_data.xy[0,0,j,:],np.linspace(NS42_pvpdf_interp_y[n,j,NS42_pvpdf.nb],NS42_pvpdf_interp_y[n,j,NS42_pvpdf.nb+1],num=NS42_pvpdf.nb),NS42_pvpdf_interp_y[n,j,:-2])
 
+NS42_s1gradpdf_interp = np.zeros((3,NS42.y_len,NS42_s1gradpdf.nb))
+for n in range(3):
+    for j in range(NS42.y_len):
+        NS42_s1gradpdf_interp[n,j,:] = np.interp(NS42_s1gradpdf_interp_data.xy[0,0,j,:],NS42_s1gradpdf.xy[0,n,j,:],NS42_s1gradpdf.pdf[n,j,:-2])
+
 S20_vortpdf_interp = np.zeros((3,S20_42.y_len,S20_42_vortpdf.nb))
 for n in range(3):
     for j in range(S20_42.y_len):
@@ -105,6 +112,11 @@ S20_pvpdf_interp = np.zeros((3,S20_42.y_len,S20_42_vortpdf.nb))
 for n in range(3):
     for j in range(S20_42.y_len):
         S20_pvpdf_interp[n,j,:] = np.interp(S20_pvpdf_interp_data.xy[0,0,j,:],S20_42_pvpdf.xy[0,n,j,:],S20_42_pvpdf.pdf[n,j,:-2])
+
+S20_s1gradpdf_interp = np.zeros((3,S20_42.y_len,S20_42_s1gradpdf.nb))
+for n in range(3):
+    for j in range(S20_42.y_len):
+        S20_s1gradpdf_interp[n,j,:] = np.interp(S20_s1gradpdf_interp_data.xy[0,0,j,:],S20_42_s1gradpdf.xy[0,n,j,:],S20_42_s1gradpdf.pdf[n,j,:-2])
 
 NS117_vortpdf_interp = np.zeros((3,NS117.y_len,NS117_vortpdf.nb))
 for n in range(3):
@@ -133,6 +145,9 @@ S20_vortpdf_interp_runmean = np.mean(S20_vortpdf_interp,axis=0)
 
 NS42_pvpdf_interp_runmean = np.mean(NS42_pvpdf_interp,axis=0)
 S20_pvpdf_interp_runmean = np.mean(S20_pvpdf_interp,axis=0)
+
+NS42_s1gradpdf_interp_runmean = np.mean(NS42_s1gradpdf_interp,axis=0)
+S20_s1gradpdf_interp_runmean = np.mean(S20_s1gradpdf_interp,axis=0)
 
 NS117_vortpdf_interp_runmean = np.mean(NS117_vortpdf_interp,axis=0)
 NS25_vortpdf_interp_runmean = np.mean(NS25_vortpdf_interp,axis=0)
@@ -282,14 +297,14 @@ NS117_pvpdf_y_mean = NS117_pvpdf_interp_data.xy[1,0,:,:]/np.mean(NS117.z_enc)
 
 NS42_vortpdf_y_mean = NS42_vortpdf_interp_data.xy[1,0,:,:]/np.mean(NS42.z_enc)
 NS42_pvpdf_y_mean = NS42_pvpdf_interp_data.xy[1,0,:,:]/np.mean(NS42.z_enc)
-NS42_s1gradpdf_y_mean = NS42_s1gradpdf.xy[1,0,:,:]/np.mean(NS42.z_enc)
+NS42_s1gradpdf_y_mean = NS42_s1gradpdf_interp_data.xy[1,0,:,:]/np.mean(NS42.z_enc)
 
 NS25_vortpdf_y_mean = NS25_vortpdf_interp_data.xy[1,0,:,:]/np.mean(NS25.z_enc)
 NS25_pvpdf_y_mean = NS25_pvpdf_interp_data.xy[1,0,:,:]/np.mean(NS25.z_enc)
 
 S20_42_vortpdf_y_mean = S20_vortpdf_interp_data.xy[1,0,:,:]/np.mean(S20_42.z_enc)
 S20_42_pvpdf_y_mean = S20_pvpdf_interp_data.xy[1,0,:,:]/np.mean(S20_42.z_enc)
-S20_42_s1gradpdf_y_mean = S20_42_s1gradpdf.xy[1,0,:,:]/np.mean(S20_42.z_enc)
+S20_42_s1gradpdf_y_mean = S20_s1gradpdf_interp_data.xy[1,0,:,:]/np.mean(S20_42.z_enc)
 
 # Normalisation of x axis
 
@@ -298,14 +313,14 @@ NS117_pvpdf_x_mean = np.log10(np.exp(NS117_pvpdf_interp_data.xy[0,0,:,:])/(cb*ce
 
 NS42_vortpdf_x_mean = np.log10(np.exp(NS42_vortpdf_interp_data.xy[0,0,:,:])/(ceps*B0/nu_42))
 NS42_pvpdf_x_mean = np.log10(np.exp(NS42_pvpdf_interp_data.xy[0,0,:,:])/(cb*ceps*N**6*42**2*(np.mean(NS42.z_enc)/L0)**(-4./3.)))
-NS42_s1gradpdf_x_mean = np.log10(np.exp(NS42_s1gradpdf.xy[0,0,:,:])/(cb*N**4*42*(np.mean(NS42.z_enc)/L0)**(-4./3.)))
+NS42_s1gradpdf_x_mean = np.log10(np.exp(NS42_s1gradpdf_interp_data.xy[0,0,:,:])/(cb*N**4*42*(np.mean(NS42.z_enc)/L0)**(-4./3.)))
 
 NS25_vortpdf_x_mean = np.log10(np.exp(NS25_vortpdf_interp_data.xy[0,0,:,:])/(ceps*B0/nu_25))
 NS25_pvpdf_x_mean = np.log10(np.exp(NS25_pvpdf_interp_data.xy[0,0,:,:])/(cb*ceps*N**6*25**2*(np.mean(NS25.z_enc)/L0)**(-4./3.)))
 
 S20_42_vortpdf_x_mean = np.log10(np.exp(S20_vortpdf_interp_data.xy[0,0,:,:])/(ceps*B0/nu_42))
 S20_42_pvpdf_x_mean = np.log10(np.exp(S20_pvpdf_interp_data.xy[0,0,:,:])/(cb*ceps*N**6*42**2*(np.mean(S20_42.z_enc)/L0)**(-4./3.)))
-S20_42_s1gradpdf_x_mean = np.log10(np.exp(S20_42_s1gradpdf.xy[0,0,:,:])/(cb*N**4*42*(np.mean(S20_42.z_enc)/L0)**(-4./3.)))
+S20_42_s1gradpdf_x_mean = np.log10(np.exp(S20_s1gradpdf_interp_data.xy[0,0,:,:])/(cb*N**4*42*(np.mean(S20_42.z_enc)/L0)**(-4./3.)))
 
 #####################################################################
 # Colourmaps
@@ -406,23 +421,25 @@ plt.savefig(opath+'pdfs_vort_subplots_Re_25_117_timeavg_interp.pdf',bbox_inches=
 plt.show()
 
 
-f, (ax1,ax2) = plt.subplots(1,2,sharey='all',figsize=(10,5))
+f, (ax1,ax2) = plt.subplots(2,1,sharey='all',figsize=(5,10))
 ax1.tick_params(bottom=True,top=True,left=True,right=True)
 ax2.tick_params(bottom=True,top=True,left=True,right=True)
 ax1.set_ylim(0,1.6)
+ax1.set_yticks([0,0.25,0.5,0.75,1,1.25,1.5])
 ax1.set_xlim(-3,3)
 ax2.set_xlim(-3,3)
-cs1 = ax1.contourf(NS42_s1gradpdf.xy[0,1,:,:],NS42_s1gradpdf.xy[1,1,:,:],NS42_s1gradpdf.pdf[1,:NS42_s1gradpdf.ny,:NS42_s1gradpdf.nb],cmap=imola_map,levels=np.linspace(0,0.4,11),extend='max')
-cs2 = ax2.contourf(S20_42_s1gradpdf.xy[0,1,:,:],S20_42_s1gradpdf.xy[1,1,:,:],S20_42_s1gradpdf.pdf[1,:S20_42_s1gradpdf.ny,:S20_42_s1gradpdf.nb],cmap=imola_map,levels=np.linspace(0,0.4,11),extend='max')
-ax1.set_xlabel(r'$\log_{10}(|\nabla b|^2/|\nabla b|_0^2)$')
+cs1 = ax1.contourf(NS42_s1gradpdf_x_mean,NS42_s1gradpdf_y_mean,NS42_s1gradpdf_interp_runmean,cmap='viridis',levels=np.linspace(0,0.4,11),extend='max')
+cs2 = ax2.contourf(S20_42_s1gradpdf_x_mean,S20_42_s1gradpdf_y_mean,S20_s1gradpdf_interp_runmean,cmap='viridis',levels=np.linspace(0,0.4,11),extend='max')
+#ax1.set_xlabel(r'$\log_{10}(|\nabla b|^2/|\nabla b|_0^2)$')
 ax2.set_xlabel(r'$\log_{10}(|\nabla b|^2/|\nabla b|_0^2)$')
 ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
-ax1.set_title(r'(a) $Fr_0=0$',loc='left',fontsize=20)
-ax2.set_title(r'(b) $Fr_0=20$',loc='left',fontsize=20)
+ax2.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax1.set_title(r'(a) $Fr_0=0$',loc='left',fontsize=24)
+ax2.set_title(r'(b) $Fr_0=20$',loc='left',fontsize=24)
 plt.colorbar(cs1,ax=ax1)
 plt.colorbar(cs2,ax=ax2)
 plt.tight_layout()
-plt.savefig(opath_42+'pdfs_s1grad_S20_S0_20.pdf')
+plt.savefig(opath_42+'pdfs_s1grad_S20_S0_vertical.pdf')
 plt.show()
 
 
