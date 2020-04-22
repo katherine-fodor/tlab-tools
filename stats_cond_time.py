@@ -17,7 +17,8 @@ rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 rc('lines', linewidth=2)
 
-opath = '/home/mpim/m300551/Figures/JAS2020/Vertical/'
+#opath = '/home/mpim/m300551/Figures/JAS2020/Vertical/'
+opath = '/home/mpim/m300551/Figures/EZ/'
 
 #######################################################################
 # Constants
@@ -26,6 +27,7 @@ nu = 1./25000.
 B0 = 0.005
 N = np.sqrt(3)
 L0 = (B0/N**3)**0.5
+omega_0 = 0.1*B0/nu
 
 #######################################################################
 # Calculate a running mean of a time series with a specified window size.
@@ -81,6 +83,7 @@ s1_flux_zif = NS42_s1_flux_zif_1 + NS42_s1_flux_zif_2 + NS42_s1_flux_zif_3
 S20_s1_var_zif = [S20.r2S[n,S20.z_if_arg[n]] for n in range(0,S20.t_len)]
 S20_w_var_zif = [S20.Ryy[n,S20.z_if_arg[n]] for n in range(0,S20.t_len)]
 S20_s1_flux_zif = [S20.Rsv[n,S20.z_if_arg[n]] for n in range(0,S20.t_len)]
+
 
 ## Conditional ##
 
@@ -203,6 +206,26 @@ rho_bw_zif_S20_turb =  (np.array(S20_vort_p2_v1_zif)-np.array(S20_vort_p2_s1_mea
 
 blues = matplotlib.cm.get_cmap('Blues')
 
+plt.gca()
+plt.grid(True,linewidth=1.5)
+plt.ylim(0,1.6)
+plt.xlim(-4,2)
+plt.xticks([-4,-3,-2,-1,0,1,2])
+plt.yticks([0,0.25,0.5,0.75,1,1.25,1.5])
+plt.plot(np.log10(np.mean(NS42_vort_int_1.int2[-4:-1,:]*NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:],axis=0)/omega_0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),label=r'$Fr_0=0$')
+#plt.plot(np.log10(np.mean(NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:],axis=0)/omega_0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),ls='--')
+plt.plot(np.log10(np.mean(S20_vort_int.int2[4:7,:]*S20_vort_int.P2EnstrophyMom1[4:7,:],axis=0)/omega_0),S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),label=r'$Fr_0=20$')
+plt.plot(np.log10(np.mean(NS42_1.EnstrophyMom1[-4:-1,:],axis=0)/omega_0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c='C1',ls=':')
+plt.plot(np.log10(np.mean(S20.EnstrophyMom1[4:7,:],axis=0)/omega_0),S20.y/np.mean(S20.z_enc[4:7]),c='C1',ls=':')
+plt.hlines(np.mean(NS42_1.z_if[-4:-1]/NS42_1.z_enc[-4:-1]),-4,-3.8,colors=blues(0.5))
+plt.hlines(np.mean(S20.z_if[4:7]/S20.z_enc[4:7]),-4,-3.8,colors=blues(0.9))
+plt.xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
+plt.ylabel(r'$z/z_\mathrm{enc}$')
+plt.legend(loc='best',handlelength=1)
+plt.tight_layout()
+plt.savefig(opath+'MeanEnstrophy_S0_S20.pdf')
+plt.show()
+
 f, (ax1,ax2) = plt.subplots(2,1,figsize=(5,10))
 ax1.grid(True,linewidth=1.5)
 ax2.grid(True,linewidth=1.5)
@@ -219,7 +242,7 @@ ax1.axhline(np.mean(NS42_1.z_if[-4:-1]/NS42_1.z_enc[-4:-1]),0,0.05,c=blues(0.5))
 ax1.axhline(np.mean(S20.z_if[4:7]/S20.z_enc[4:7]),0,0.05,c=blues(0.9))
 ax1.set_xlabel(r'$a_\mathrm{T}$')
 ax1.set_ylabel(r'$z/z_\mathrm{enc}$')
-ax1.set_title(r'(a)',fontsize=20,loc='left')
+ax1.set_title(r'(a)',fontsize=24,loc='left')
 ax2.set_xlabel(r'$z_\mathrm{enc}/L_0$')
 ax2.set_ylabel(r'$(a_\mathrm{T})_{z_{i,f}}$')
 ax2.set_title(r'(b)',fontsize=24,loc='left')
