@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import matplotlib.style
 import matplotlib.lines as mlines
 from matplotlib import rc
+from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
+from matplotlib.ticker import (MultipleLocator, FormatStrFormatter,
+                               AutoMinorLocator)
 
 rc('text', usetex=True)
 rc('text.latex', preamble=r"\usepackage{fourier}")
@@ -17,8 +20,8 @@ rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 rc('lines', linewidth=2)
 
-#opath = '/home/mpim/m300551/Figures/JAS2020/Vertical/'
-opath = '/home/mpim/m300551/Figures/EZ/'
+opath = '/home/mpim/m300551/Figures/JAS2020/Reviewer_figs/'
+#opath = '/home/mpim/m300551/Figures/EZ/'
 
 #######################################################################
 # Constants
@@ -53,6 +56,8 @@ path_S20 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re042/3072x960x4608-S20
 
 path_vort = 'stats/gate-vorticity/gate-2-08/'
 path_vort_S20 = 'stats/gate-vorticity/gate-1-24/'
+
+path_gate8 = 'stats/gate-vorticity/gate-8/'
 
 # Conventional
 
@@ -92,6 +97,9 @@ NS42_vort_int_2 = Conditional_Stats(path_2+path_vort+'int60000-74500.nc',path_2+
 NS42_vort_int_3 = Conditional_Stats(path_3+path_vort+'int83000-127500.nc',path_3+path_vort+'Partition1/cavg83000-127500.nc',path_3+path_vort+'Partition2/cavg83000-127500.nc')
 
 S20_vort_int = Conditional_Stats(path_S20+path_vort_S20+'int42000-148000.nc',path_S20+path_vort_S20+'Partition1/cavg42000-148000.nc',path_S20+path_vort_S20+'Partition2/cavg42000-148000.nc')
+
+NS42_gate8_int = Conditional_Stats(path_1+path_gate8+'int36500-47500.nc',path_1+path_gate8+'Partition1/cavg36500-47500.nc',path_1+path_gate8+'Partition2/cavg36500-47500.nc')
+S20_gate8_int = Conditional_Stats(path_S20+path_gate8+'int66000-84000.nc',path_S20+path_gate8+'Partition1/cavg66000-84000.nc',path_S20+path_gate8+'Partition2/cavg66000-84000.nc')
 
 # Vorticity #
 
@@ -213,17 +221,78 @@ plt.xlim(-4,2)
 plt.xticks([-4,-3,-2,-1,0,1,2])
 plt.yticks([0,0.25,0.5,0.75,1,1.25,1.5])
 plt.plot(np.log10(np.mean(NS42_vort_int_1.int2[-4:-1,:]*NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:],axis=0)/omega_0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),label=r'$Fr_0=0$')
+plt.plot(np.log10(np.mean(NS42_gate8_int.int2[:,:]*NS42_gate8_int.P2EnstrophyMom1[:,:],axis=0)/omega_0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),ls='--')
 #plt.plot(np.log10(np.mean(NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:],axis=0)/omega_0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),ls='--')
 plt.plot(np.log10(np.mean(S20_vort_int.int2[4:7,:]*S20_vort_int.P2EnstrophyMom1[4:7,:],axis=0)/omega_0),S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),label=r'$Fr_0=20$')
+plt.plot(np.log10(np.mean(S20_gate8_int.int2[:,:]*S20_gate8_int.P2EnstrophyMom1[:,:],axis=0)/omega_0),S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),ls='--')
 plt.plot(np.log10(np.mean(NS42_1.EnstrophyMom1[-4:-1,:],axis=0)/omega_0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c='C1',ls=':')
 plt.plot(np.log10(np.mean(S20.EnstrophyMom1[4:7,:],axis=0)/omega_0),S20.y/np.mean(S20.z_enc[4:7]),c='C1',ls=':')
 plt.hlines(np.mean(NS42_1.z_if[-4:-1]/NS42_1.z_enc[-4:-1]),-4,-3.8,colors=blues(0.5))
 plt.hlines(np.mean(S20.z_if[4:7]/S20.z_enc[4:7]),-4,-3.8,colors=blues(0.9))
-plt.xlabel(r'$\log_{10}(\omega^2/\omega_0^2)$')
+plt.xlabel(r'$\log_{10}(\langle \omega^2 \rangle /\omega_0^2)$')
 plt.ylabel(r'$z/z_\mathrm{enc}$')
 plt.legend(loc='best',handlelength=1)
 plt.tight_layout()
-plt.savefig(opath+'MeanEnstrophy_S0_S20.pdf')
+plt.savefig(opath+'MeanEnstrophy_S0_S20_gate8.pdf')
+plt.show()
+
+
+plt.gca()
+plt.grid(True,linewidth=1.5)
+plt.ylim(0,1.6)
+plt.xlim(0,7)
+plt.yticks([0,0.25,0.5,0.75,1,1.25,1.5])
+plt.plot(np.mean(NS42_vort_int_1.int2[-4:-1,:]*NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:],axis=0)/omega_0,NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),label=r'$Fr_0=0$')
+plt.plot(np.mean(NS42_gate8_int.int2[:,:]*NS42_gate8_int.P2EnstrophyMom1[:,:],axis=0)/omega_0,NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),ls='--')
+plt.plot(np.mean(S20_vort_int.int2[4:7,:]*S20_vort_int.P2EnstrophyMom1[4:7,:],axis=0)/omega_0,S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),label=r'$Fr_0=20$')
+plt.plot(np.mean(S20_gate8_int.int2[:,:]*S20_gate8_int.P2EnstrophyMom1[:,:],axis=0)/omega_0,S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),ls='--')
+plt.plot(np.mean(NS42_1.EnstrophyMom1[-4:-1,:],axis=0)/omega_0,NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c='C1',ls=':')
+plt.plot(np.mean(S20.EnstrophyMom1[4:7,:],axis=0)/omega_0,S20.y/np.mean(S20.z_enc[4:7]),c='C1',ls=':')
+plt.hlines(np.mean(NS42_1.z_if[-4:-1]/NS42_1.z_enc[-4:-1]),-4,-3.8,colors=blues(0.5))
+plt.hlines(np.mean(S20.z_if[4:7]/S20.z_enc[4:7]),-4,-3.8,colors=blues(0.9))
+plt.xlabel(r'$\langle \omega^2 \rangle /\omega_0^2$')
+plt.ylabel(r'$z/z_\mathrm{enc}$')
+plt.legend(loc='best',handlelength=1)
+plt.tight_layout()
+plt.savefig(opath+'MeanEnstrophy_S0_S20_gate8_linear.pdf')
+plt.show()
+
+f, ax = plt.subplots(figsize=[5,5])
+plt.tick_params(
+    axis='both',
+    which='major',
+    bottom=False,
+    left=False)
+ax.grid(True,linewidth=1.5)
+ax.xaxis.set_minor_locator(MultipleLocator(0.01))
+ax.set_ylim(0,1.6)
+ax.set_xlim(0.9,1.01)
+ax.plot(np.mean(NS42_vort_int_1.int2[-4:-1,:]*NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:]/NS42_1.EnstrophyMom1[-4:-1,:],axis=0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),label=r'$Fr_0=0$')
+ax.plot(np.mean(S20_vort_int.int2[4:7,:]*S20_vort_int.P2EnstrophyMom1[4:7,:]/S20.EnstrophyMom1[4:7,:],axis=0),S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),label=r'$Fr_0=20$')
+ax.set_xlabel(r'$a_\mathrm{T}\langle \omega^2 \rangle_\mathrm{T} /\langle \omega^2 \rangle$')
+ax.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax.legend(loc='best',handlelength=1)
+plt.tight_layout()
+plt.savefig(opath+'MeanEnstrophy_S0_S20_linear_percent.pdf')
+plt.show()
+
+f, ax = plt.subplots(figsize=[5,5])
+ax.grid(True,linewidth=1.5)
+ax.set_ylim(0,1.6)
+ax.set_xlim(0,1.1)
+ax.set_yticks([0,0.25,0.5,0.75,1,1.25,1.5])
+ax.plot(np.mean(NS42_vort_int_1.int2[-4:-1,:]*NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:]/NS42_1.EnstrophyMom1[-4:-1,:],axis=0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5),label=r'$Fr_0=0$')
+ax.plot(np.mean(S20_vort_int.int2[4:7,:]*S20_vort_int.P2EnstrophyMom1[4:7,:]/S20.EnstrophyMom1[4:7,:],axis=0),S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9),label=r'$Fr_0=20$')
+axins = zoomed_inset_axes(ax, 1, loc=2)
+axins.plot(np.mean(NS42_vort_int_1.int2[-4:-1,:]*NS42_vort_int_1.P2EnstrophyMom1[-4:-1,:]/NS42_1.EnstrophyMom1[-4:-1,:],axis=0),NS42_1.y/np.mean(NS42_1.z_enc[-4:-1]),c=blues(0.5))
+axins.plot(np.mean(S20_vort_int.int2[4:7,:]*S20_vort_int.P2EnstrophyMom1[4:7,:]/S20.EnstrophyMom1[4:7,:],axis=0),S20.y/np.mean(S20.z_enc[4:7]),c=blues(0.9))
+x1,x2,y1,y2 = 0.9,1.05,0,1.3
+axins.set_xlim(x1,x2)
+axins.set_ylim(y1,y2)
+ax.set_xlabel(r'$a_\mathrm{T}\langle \omega^2 \rangle_\mathrm{T} /\langle \omega^2 \rangle$')
+ax.set_ylabel(r'$z/z_\mathrm{enc}$')
+ax.legend(loc='best',handlelength=1)
+plt.tight_layout()
 plt.show()
 
 f, (ax1,ax2) = plt.subplots(2,1,figsize=(5,10))
