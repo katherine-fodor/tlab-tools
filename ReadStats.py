@@ -24,7 +24,7 @@ class Statistics:
         # for 2D vars, the first index is time, the second is height
         self.rU    = datafile_avg.variables['rU'][:,:] 				
         self.rV    = datafile_avg.variables['rV'][:,:] 	  # mean velocity
-        self.rW    = datafile_avg.variables['rW'][:,:] 				
+        self.rW    = datafile_avg.variables['rW'][:,:]
 
         self.Tke   = datafile_avg.variables['Tke'][:,:]   # turbulent kinetic energy
         self.Rxx   = datafile_avg.variables['Rxx'][:,:]   # u variance
@@ -73,15 +73,6 @@ class Statistics:
             datafile_pv = nc.Dataset(path_pv, 'r')
             self.PVMom1 = datafile_pv.variables['PVMom1'][:,:] # mean potential vorticity
             self.PVMom2 = datafile_pv.variables['PVMom2'][:,:] # potential vorticity variance
-
-        # avgW2 statistics
-        path_avgW2 = path_avg.replace('avg','avgW2')       # assume that name is same except for avg -> avgW2
-
-        exists = os.path.isfile(path_avgW2)                # check that W2 stats exist
-        if exists:
-            datafile_W2 = nc.Dataset(path_avgW2, 'r')
-            self.EnstrophyMom1 = datafile_W2.variables['EnstrophyW_iW_iMom1'][:,:] # mean enstrophy
-            self.LnEnstrophyMom1 = datafile_W2.variables['LnEnstrophyW_iW_iMom1'][:,:] # natural logarithm of mean enstrophy
         
         # time and height info 
         self.t_len = len(self.t)
@@ -109,7 +100,11 @@ class Statistics:
 
         self.b_enc = N**2*self.z_enc                                                                                          # buoyancy scale in mixed-layer
 
+        # velocities
 
+        self.U0     = self.rU[:,-1] - self.rU[:,0]                                                                            # free-stream velocity
+        self.U_ml   = np.array([(1./self.z_if[n])*np.trapz(self.rU[n,:self.z_if_arg[n]]-self.rU[n,0],self.y[:self.z_if_arg[n]]) for n in range(0,self.t_len)]) # mixed-layer velocity
+        self.DeltaU = self.U0 - self.U_ml
         
 class Conditional_Stats:
     
@@ -199,23 +194,6 @@ class Conditional_Stats:
                 datafile_avgMom_p2 = nc.Dataset(path_avgMom_p2,'r')
                 self.P2tauy1 = datafile_avgMom_p2.variables['tauy1Mom1'][:,:]
                 self.P2v1 = datafile_avgMom_p2.variables['v1Mom1'][:,:] # same as above but for partiton 2...
-
-        # avgW2 statistics
-        if data_path_partition1 is not None:
-            path_avgW2_p1 = path_partition1.replace('cavg','avgW2') # assume that name is the same except for cavg -> avgW2
-            exists = os.path.isfile(path_avgW2_p1)
-            if exists:
-                datafile_avgW2_p1 = nc.Dataset(path_avgW2_p1,'r')
-                self.P1EnstrophyMom1 = datafile_avgW2_p1.variables['EnstrophyW_iW_iMom1'][:,:] # mean enstrophy
-                self.P1LnEnstrophyMom1 = datafile_avgW2_p1.variables['LnEnstrophyW_iW_iMom1'][:,:] # natural logarithm of mean enstrophy
-
-        if data_path_partition2 is not None:
-            path_avgW2_p2 = path_partition2.replace('cavg','avgW2')
-            exists = os.path.isfile(path_avgW2_p2)
-            if exists:
-                datafile_avgW2_p2 = nc.Dataset(path_avgW2_p2,'r')
-                self.P2EnstrophyMom1 = datafile_avgW2_p2.variables['EnstrophyW_iW_iMom1'][:,:]
-                self.P2LnEnstrophyMom1 = datafile_avgW2_p2.variables['LnEnstrophyW_iW_iMom1'][:,:] # same as above but for partiton 2...                
         
     
         
