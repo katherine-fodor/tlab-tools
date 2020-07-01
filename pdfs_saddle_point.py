@@ -59,6 +59,14 @@ S20_2 = Statistics(path_S20_2+'stats/pdftimes/avg39000-91000.nc')
 S25   = Statistics(path_S25+'stats/pdftimes/avg28000-128000.nc')
 
 z_enc_S20 = np.concatenate((S20_1.z_enc,S20_2.z_enc))
+z_enc_arg_S20 = np.concatenate((S20_1.z_enc_arg,S20_2.z_enc_arg))
+
+z_enc_runningmean_S0 = runningmean(S0.z_enc,1)
+z_enc_runningmean_S05 = runningmean(S05.z_enc,1)
+z_enc_runningmean_S10 = runningmean(S10.z_enc,1)
+z_enc_runningmean_S15 = runningmean(S15.z_enc,1)
+z_enc_runningmean_S20 = runningmean(z_enc_S20,1)
+z_enc_runningmean_S25 = runningmean(S25.z_enc,1)
 
 ############################################################################
 # Pdf
@@ -93,18 +101,6 @@ S10_vortpdf_interp_data   = Pdfs([path_S10+'stats/pdfs/pdf84000.LnEnstrophyW_iW_
 S15_vortpdf_interp_data   = Pdfs([path_S15+'stats/pdfs/pdf76000.LnEnstrophyW_iW_i'],path_S15+'y.dat')
 S20_vortpdf_interp_data   = Pdfs([path_S20_2+'stats/pdfs/pdf75000.LnEnstrophyW_iW_i'],path_S20_2+'y.dat')
 S25_vortpdf_interp_data   = Pdfs([path_S25+'stats/pdfs/pdf110000.LnEnstrophyW_iW_i'],path_S25+'y.dat')
-
-# Interpolate pdfs in y-direction
-
-# NS42_vortpdf_interp_1_y = np.zeros((len(vortlist_1),NS42_3.y_len,NS42_vortpdf_1.nb+2))
-# for n in range(len(vortlist_1)):
-#     for i in range(NS42_vortpdf_1.nb+2):
-#         NS42_vortpdf_interp_1_y[n,:,i] = np.interp(NS42_3.y,NS42_1.y,NS42_vortpdf_1.pdf[n,:-1,i])
-
-# NS42_vortpdf_interp_2_y = np.zeros((len(vortlist_2),NS42_3.y_len,NS42_vortpdf_2.nb+2))
-# for n in range(len(vortlist_2)):
-#     for i in range(NS42_vortpdf_2.nb+2):
-#         NS42_vortpdf_interp_2_y[n,:,i] = np.interp(NS42_3.y,NS42_2.y,NS42_vortpdf_2.pdf[n,:-1,i])
         
 # Interpolate pdfs in x-direction
 
@@ -223,74 +219,141 @@ for t in range(0,np.ma.size(S25_vortpdf_interp_runmean,0)):
         maxprob_vort_S25[t,j] = np.max(S25_vortpdf_interp_runmean[t,j,:])
 maxvort_S25 = np.log10(np.exp(maxvort_S25)/(ceps*B0/nu))
 
+# Find saddle based on largest jump in maxvort away from boundaries
 
-# Find jump in maxvort
-
+S0_jumps = np.zeros((np.ma.size(S0_vortpdf_interp_runmean,0),S0.y_len))
 maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
 y_maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
 maxvort_it_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
 for t in range(0,np.ma.size(S0_vortpdf_interp_runmean,0)):
-    for j in range(0,S0.y_len):
-        if np.abs(maxvort_S0[t,j+1])-np.abs(maxvort_S0[t,j]) > 0.2:
-            maxit_vort_S0[t] = j+1
-            break
-    y_maxit_vort_S0[t] = S0.y[int(maxit_vort_S0[t])]/S0.z_enc[t+1]
-    maxvort_it_S0[t] = (maxvort_S0[t,int(maxit_vort_S0[t]-1)]+maxvort_S0[t,int(maxit_vort_S0[t])])/2
+    for j in range(S0.z_enc_arg[t],S0.y_len-100):
+        S0_jumps[t,j] = np.abs(maxvort_S0[t,j+1])-np.abs(maxvort_S0[t,j])
+    maxit_vort_S0[t] = np.argmax(S0_jumps[t,:])
+    y_maxit_vort_S0[t] = S0.y[int(maxit_vort_S0[t])]/z_enc_runningmean_S0[t]
+    maxvort_it_S0[t] = (maxvort_S0[t,int(maxit_vort_S0[t]+1)]+maxvort_S0[t,int(maxit_vort_S0[t])])/2
 
+S05_jumps = np.zeros((np.ma.size(S05_vortpdf_interp_runmean,0),S05.y_len))
 maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
 y_maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
 maxvort_it_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
 for t in range(0,np.ma.size(S05_vortpdf_interp_runmean,0)):
-    for j in range(S05.z_if_arg[t],S05.y_len):
-        if np.abs(maxvort_S05[t,j+1])-np.abs(maxvort_S05[t,j]) > 0.1:
-            maxit_vort_S05[t] = j+1
-            break
-    y_maxit_vort_S05[t] = S05.y[int(maxit_vort_S05[t])]/S05.z_enc[t+1]
-    maxvort_it_S05[t] = (maxvort_S05[t,int(maxit_vort_S05[t]-1)]+maxvort_S05[t,int(maxit_vort_S05[t])])/2
+    for j in range(S05.z_enc_arg[t],S05.y_len-100):
+        S05_jumps[t,j] = np.abs(maxvort_S05[t,j+1])-np.abs(maxvort_S05[t,j])
+    maxit_vort_S05[t] = np.argmax(S05_jumps[t,:])
+    y_maxit_vort_S05[t] = S05.y[int(maxit_vort_S05[t])]/z_enc_runningmean_S05[t]
+    maxvort_it_S05[t] = (maxvort_S05[t,int(maxit_vort_S05[t]+1)]+maxvort_S05[t,int(maxit_vort_S05[t])])/2
 
+S10_jumps = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
 maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
 y_maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
 maxvort_it_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
 for t in range(0,np.ma.size(S10_vortpdf_interp_runmean,0)):
-    for j in range(S10.z_enc_arg[t],S10.y_len):
-        if np.abs(maxvort_S10[t,j+1])-np.abs(maxvort_S10[t,j]) > 0.1:
-            maxit_vort_S10[t] = j+1
-            break
-    y_maxit_vort_S10[t] = S10.y[int(maxit_vort_S10[t])]/S10.z_enc[t+1]
-    maxvort_it_S10[t] = (maxvort_S10[t,int(maxit_vort_S10[t]-1)]+maxvort_S10[t,int(maxit_vort_S10[t])])/2
+    for j in range(S10.z_enc_arg[t],S10.y_len-100):
+        S10_jumps[t,j] = np.abs(maxvort_S10[t,j+1])-np.abs(maxvort_S10[t,j])
+    maxit_vort_S10[t] = np.argmax(S10_jumps[t,:])
+    y_maxit_vort_S10[t] = S10.y[int(maxit_vort_S10[t])]/z_enc_runningmean_S10[t]
+    maxvort_it_S10[t] = (maxvort_S10[t,int(maxit_vort_S10[t]+1)]+maxvort_S10[t,int(maxit_vort_S10[t])])/2
 
+S15_jumps = np.zeros((np.ma.size(S15_vortpdf_interp_runmean,0),S15.y_len))
 maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
 y_maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
 maxvort_it_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
 for t in range(0,np.ma.size(S15_vortpdf_interp_runmean,0)):
-    for j in range(0,S15.y_len):
-        if np.abs(maxvort_S15[t,j+1])-np.abs(maxvort_S15[t,j]) > 0.2:
-            maxit_vort_S15[t] = j+1
-            break
-    y_maxit_vort_S15[t] = S15.y[int(maxit_vort_S15[t])]/S15.z_enc[t+1]
-    maxvort_it_S15[t] = (maxvort_S15[t,int(maxit_vort_S15[t]-1)]+maxvort_S15[t,int(maxit_vort_S15[t])])/2
-    
+    for j in range(S15.z_enc_arg[t],S15.y_len-100):
+        S15_jumps[t,j] = np.abs(maxvort_S15[t,j+1])-np.abs(maxvort_S15[t,j])
+    maxit_vort_S15[t] = np.argmax(S15_jumps[t,:])
+    y_maxit_vort_S15[t] = S15.y[int(maxit_vort_S15[t])]/z_enc_runningmean_S15[t]
+    maxvort_it_S15[t] = (maxvort_S15[t,int(maxit_vort_S15[t]+1)]+maxvort_S15[t,int(maxit_vort_S15[t])])/2
+
+S20_jumps = np.zeros((np.ma.size(S20_vortpdf_interp_runmean,0),S20_1.y_len))
 maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
 y_maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
 maxvort_it_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
 for t in range(0,np.ma.size(S20_vortpdf_interp_runmean,0)):
-    for j in range(0,S20_1.y_len):
-        if np.abs(maxvort_S20[t,j+1])-np.abs(maxvort_S20[t,j]) > 0.3:
-            maxit_vort_S20[t] = j+1
-            break
-    y_maxit_vort_S20[t] = S20_1.y[int(maxit_vort_S20[t])]/z_enc_S20[t+1]
-    maxvort_it_S20[t] = (maxvort_S20[t,int(maxit_vort_S20[t]-1)]+maxvort_S20[t,int(maxit_vort_S20[t])])/2
+    for j in range(z_enc_arg_S20[t],S20_1.y_len-100):
+        S20_jumps[t,j] = np.abs(maxvort_S20[t,j+1])-np.abs(maxvort_S20[t,j])
+    maxit_vort_S20[t] = np.argmax(S20_jumps[t,:])
+    y_maxit_vort_S20[t] = S20_1.y[int(maxit_vort_S20[t])]/z_enc_runningmean_S20[t]
+    maxvort_it_S20[t] = (maxvort_S20[t,int(maxit_vort_S20[t]+1)]+maxvort_S20[t,int(maxit_vort_S20[t])])/2
 
+S25_jumps = np.zeros((np.ma.size(S25_vortpdf_interp_runmean,0),S25.y_len))
 maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
 y_maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
 maxvort_it_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
 for t in range(0,np.ma.size(S25_vortpdf_interp_runmean,0)):
-    for j in range(0,S25.y_len):
-        if np.abs(maxvort_S25[t,j+1])-np.abs(maxvort_S25[t,j]) > 0.2:
-            maxit_vort_S25[t] = j+1
-            break
-    y_maxit_vort_S25[t] = S25.y[int(maxit_vort_S25[t])]/S25.z_enc[t+1]
-    maxvort_it_S25[t] = (maxvort_S25[t,int(maxit_vort_S25[t]-1)]+maxvort_S25[t,int(maxit_vort_S25[t])])/2
+    for j in range(S25.z_enc_arg[t],S25.y_len-100):
+        S25_jumps[t,j] = np.abs(maxvort_S25[t,j+1])-np.abs(maxvort_S25[t,j])
+    maxit_vort_S25[t] = np.argmax(S25_jumps[t,:])
+    y_maxit_vort_S25[t] = S25.y[int(maxit_vort_S25[t])]/z_enc_runningmean_S25[t]
+    maxvort_it_S25[t] = (maxvort_S25[t,int(maxit_vort_S25[t]+1)]+maxvort_S25[t,int(maxit_vort_S25[t])])/2
+    
+# Find sadddle based on a specified jump in maxvort
+
+# maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
+# y_maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
+# maxvort_it_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
+# for t in range(0,np.ma.size(S0_vortpdf_interp_runmean,0)):
+#     for j in range(0,S0.y_len):
+#         if np.abs(maxvort_S0[t,j+1])-np.abs(maxvort_S0[t,j]) > 0.2:
+#             maxit_vort_S0[t] = j
+#             break
+#     y_maxit_vort_S0[t] = S0.y[int(maxit_vort_S0[t])]/z_enc_runningmean_S0[t]
+#     maxvort_it_S0[t] = (maxvort_S0[t,int(maxit_vort_S0[t]+1)]+maxvort_S0[t,int(maxit_vort_S0[t])])/2
+
+# maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
+# y_maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
+# maxvort_it_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
+# for t in range(0,np.ma.size(S05_vortpdf_interp_runmean,0)):
+#     for j in range(S05.z_if_arg[t],S05.y_len):
+#         if np.abs(maxvort_S05[t,j+1])-np.abs(maxvort_S05[t,j]) > 0.1:
+#             maxit_vort_S05[t] = j
+#             break
+#     y_maxit_vort_S05[t] = S05.y[int(maxit_vort_S05[t])]/z_enc_runningmean_S05[t]
+#     maxvort_it_S05[t] = (maxvort_S05[t,int(maxit_vort_S05[t]+1)]+maxvort_S05[t,int(maxit_vort_S05[t])])/2
+
+# maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+# y_maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+# maxvort_it_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+# for t in range(0,np.ma.size(S10_vortpdf_interp_runmean,0)):
+#     for j in range(S10.z_enc_arg[t],S10.y_len):
+#         if np.abs(maxvort_S10[t,j+1])-np.abs(maxvort_S10[t,j]) > 0.1:
+#             maxit_vort_S10[t] = j
+#             break
+#     y_maxit_vort_S10[t] = S10.y[int(maxit_vort_S10[t])]/z_enc_runningmean_S10[t]
+#     maxvort_it_S10[t] = (maxvort_S10[t,int(maxit_vort_S10[t]+1)]+maxvort_S10[t,int(maxit_vort_S10[t])])/2
+
+# maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
+# y_maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
+# maxvort_it_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
+# for t in range(0,np.ma.size(S15_vortpdf_interp_runmean,0)):
+#     for j in range(0,S15.y_len):
+#         if np.abs(maxvort_S15[t,j+1])-np.abs(maxvort_S15[t,j]) > 0.2:
+#             maxit_vort_S15[t] = j
+#             break
+#     y_maxit_vort_S15[t] = S15.y[int(maxit_vort_S15[t])]/z_enc_runningmean_S15[t]
+#     maxvort_it_S15[t] = (maxvort_S15[t,int(maxit_vort_S15[t]+1)]+maxvort_S15[t,int(maxit_vort_S15[t])])/2
+    
+# maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
+# y_maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
+# maxvort_it_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
+# for t in range(0,np.ma.size(S20_vortpdf_interp_runmean,0)):
+#     for j in range(0,S20_1.y_len):
+#         if np.abs(maxvort_S20[t,j+1])-np.abs(maxvort_S20[t,j]) > 0.3:
+#             maxit_vort_S20[t] = j
+#             break
+#     y_maxit_vort_S20[t] = S20_1.y[int(maxit_vort_S20[t])]/z_enc_runningmean_S20[t]
+#     maxvort_it_S20[t] = (maxvort_S20[t,int(maxit_vort_S20[t]+1)]+maxvort_S20[t,int(maxit_vort_S20[t])])/2
+
+# maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
+# y_maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
+# maxvort_it_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
+# for t in range(0,np.ma.size(S25_vortpdf_interp_runmean,0)):
+#     for j in range(0,S25.y_len):
+#         if np.abs(maxvort_S25[t,j+1])-np.abs(maxvort_S25[t,j]) > 0.2:
+#             maxit_vort_S25[t] = j
+#             break
+#     y_maxit_vort_S25[t] = S25.y[int(maxit_vort_S25[t])]/z_enc_runningmean_S25[t]
+#     maxvort_it_S25[t] = (maxvort_S25[t,int(maxit_vort_S25[t]+1)]+maxvort_S25[t,int(maxit_vort_S25[t])])/2
     
 
 # Find saddle as point where maxprob has a minimum
@@ -298,44 +361,44 @@ for t in range(0,np.ma.size(S25_vortpdf_interp_runmean,0)):
 # y_vort_S0_saddle = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
 # maxvort_S0_saddle = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
 # for t in range(np.ma.size(S0_vortpdf_interp_runmean,0)):
-#     y_vort_S0_saddle[t] = S0.y[np.argmin(maxprob_vort_S0[t,:-150])]
+#     y_vort_S0_saddle[t] = S0.y[np.argmin(maxprob_vort_S0[t,:-100])]
 #     maxvort_S0_saddle[t] = maxvort_S0[t,np.argmin(np.abs(y_vort_S0_saddle[t]-S0.y))]
-#     y_vort_S0_saddle[t] = y_vort_S0_saddle[t]/S0.z_enc[t+1]
+#     y_vort_S0_saddle[t] = y_vort_S0_saddle[t]/z_enc_runningmean_S0[t]
 
 # y_vort_S05_saddle = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
 # maxvort_S05_saddle = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
 # for t in range(np.ma.size(S05_vortpdf_interp_runmean,0)):
-#     y_vort_S05_saddle[t] = S05.y[np.argmin(maxprob_vort_S05[t,:-150])]
+#     y_vort_S05_saddle[t] = S05.y[np.argmin(maxprob_vort_S05[t,:-100])]
 #     maxvort_S05_saddle[t] = maxvort_S05[t,np.argmin(np.abs(y_vort_S05_saddle[t]-S05.y))]
-#     y_vort_S05_saddle[t] = y_vort_S05_saddle[t]/S05.z_enc[t+1]
+#     y_vort_S05_saddle[t] = y_vort_S05_saddle[t]/z_enc_runningmean_S05[t]
     
 # y_vort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
 # maxvort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
 # for t in range(np.ma.size(S10_vortpdf_interp_runmean,0)):
 #     y_vort_S10_saddle[t] = S10.y[np.argmin(maxprob_vort_S10[t,:-100])]
 #     maxvort_S10_saddle[t] = maxvort_S10[t,np.argmin(np.abs(y_vort_S10_saddle[t]-S10.y))]
-#     y_vort_S10_saddle[t] = y_vort_S10_saddle[t]/S10.z_enc[t+1]
+#     y_vort_S10_saddle[t] = y_vort_S10_saddle[t]/z_enc_runningmean_S10[t]
 
 # y_vort_S15_saddle = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
 # maxvort_S15_saddle = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
 # for t in range(np.ma.size(S15_vortpdf_interp_runmean,0)):
 #     y_vort_S15_saddle[t] = S15.y[np.argmin(maxprob_vort_S15[t,:-100])]
 #     maxvort_S15_saddle[t] = maxvort_S15[t,np.argmin(np.abs(y_vort_S15_saddle[t]-S15.y))]
-#     y_vort_S15_saddle[t] = y_vort_S15_saddle[t]/S15.z_enc[t+1]
+#     y_vort_S15_saddle[t] = y_vort_S15_saddle[t]/z_enc_runningmean_S15[t]
     
 # y_vort_S20_saddle = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
 # maxvort_S20_saddle = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
 # for t in range(np.ma.size(S20_vortpdf_interp_runmean,0)):
 #     y_vort_S20_saddle[t] = S20_1.y[np.argmin(maxprob_vort_S20[t,:-100])]
 #     maxvort_S20_saddle[t] = maxvort_S20[t,np.argmin(np.abs(y_vort_S20_saddle[t]-S20_1.y))]
-#     y_vort_S20_saddle[t] = y_vort_S20_saddle[t]/z_enc_S20[t+1]
+#     y_vort_S20_saddle[t] = y_vort_S20_saddle[t]/z_enc_runningmean_S20[t]
 
 # y_vort_S25_saddle = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
 # maxvort_S25_saddle = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
 # for t in range(np.ma.size(S25_vortpdf_interp_runmean,0)):
 #     y_vort_S25_saddle[t] = S25.y[np.argmin(maxprob_vort_S25[t,:-100])]
 #     maxvort_S25_saddle[t] = maxvort_S25[t,np.argmin(np.abs(y_vort_S25_saddle[t]-S25.y))]
-#     y_vort_S25_saddle[t] = y_vort_S25_saddle[t]/S25.z_enc[t+1]
+#     y_vort_S25_saddle[t] = y_vort_S25_saddle[t]/z_enc_runningmean_S25[t]
     
 
 # concatenate over time
@@ -355,9 +418,9 @@ ax1.grid(True,linewidth=1.5)
 ax2.grid(True,linewidth=1.5)
 ax1.tick_params(bottom=False,left=False)
 ax2.tick_params(bottom=False,left=False)
-ax1.set_ylim(1,1.7)
+ax1.set_ylim(1,1.6)
 ax1.set_xlim(15,30)
-ax2.set_ylim(-2,0.2)
+ax2.set_ylim(-2.2,0)
 ax2.set_xlim(15,30)
 ax1.plot(S0.z_enc[1:-1]/L0,y_maxit_vort_S0,c=blues(0.5))
 ax1.plot(S05.z_enc[1:-1]/L0,y_maxit_vort_S05,c=blues(0.6))
@@ -382,7 +445,7 @@ ax2.set_title('(b)',fontsize=24,loc='left')
 #ax1.legend(loc='best',fontsize=20,handlelength=1,borderaxespad=0.2)
 ax2.legend(loc='best',fontsize=18,handlelength=1,borderaxespad=0.2,ncol=2,columnspacing=1)
 plt.tight_layout()
-plt.savefig(opath+'pdfs_saddle_point.pdf',bbox_inches='tight')
+plt.savefig(opath+'pdfs_saddle_point_maxjump.pdf',bbox_inches='tight')
 plt.show()
 
 
