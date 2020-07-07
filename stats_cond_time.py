@@ -52,13 +52,23 @@ path_S20_1 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/S20-1536x576x15
 path_S20_2 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/S20-1536x576x2304/'
 path_S25 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/2560x896x2560-S25/'
 
-path_vort_S0 = 'stats/gate-vorticity/gate-1-76/'
-path_vort_S05 = 'stats/gate-vorticity/gate-2-077/'
-#path_vort_S05 = 'stats/gate-vorticity/gate-1-76/'
-path_vort_S10 = 'stats/gate-vorticity/gate-2-088/'
-path_vort_S15 = 'stats/gate-vorticity/gate-1-056/'
+# Max jump
+
+path_vort_S0 = 'stats/gate-vorticity/gate-1-67/'
+path_vort_S05 = 'stats/gate-vorticity/gate-1-64/'
+path_vort_S10 = 'stats/gate-vorticity/gate-1-26/'
+path_vort_S15 = 'stats/gate-vorticity/gate-0-97/'
 path_vort_S20 = 'stats/gate-vorticity/gate-1-1/'
-path_vort_S25 = 'stats/gate-vorticity/gate-1-26/'
+path_vort_S25 = 'stats/gate-vorticity/gate-1-116/'
+
+# Threshold-based jump
+
+# path_vort_S0 = 'stats/gate-vorticity/gate-1-76/'
+# path_vort_S05 = 'stats/gate-vorticity/gate-2-077/'
+# path_vort_S10 = 'stats/gate-vorticity/gate-2-088/'
+# path_vort_S15 = 'stats/gate-vorticity/gate-1-056/'
+# path_vort_S20 = 'stats/gate-vorticity/gate-1-1/'
+# path_vort_S25 = 'stats/gate-vorticity/gate-1-26/'
 
 # Conventional
 
@@ -310,12 +320,12 @@ ax1.set_title(r'(a)',fontsize=24,loc='left')
 ax2.set_xlabel(r'$z_{enc}/L_0$')
 ax2.set_ylabel(r'$(a_T)_{z_{i,f}}$')
 ax2.set_title(r'(b)',fontsize=24,loc='left')
-ax3.set_xlabel(r'$\Delta u/[N_0(\Delta z_i)_c]$')
+ax3.set_xlabel(r'$\Delta U/[N_0(\Delta z_i)_c]$')
 ax3.set_ylabel(r'$(a_\mathrm{T})_{z_{i,f}}/[(a_\mathrm{T})_{z_{i,f}}]_c$')
 ax3.set_title(r'(c)',fontsize=24,loc='left')
 ax1.legend(loc='lower left',fontsize=18,handlelength=1,borderaxespad=0.1)
 plt.tight_layout()
-plt.savefig(opath+'turb_area_frac_extended.pdf',bbox_inches='tight')
+plt.savefig(opath+'turb_area_frac_maxjump.pdf',bbox_inches='tight')
 plt.show()
 
 
@@ -354,11 +364,11 @@ ax2.set_xlabel(r'$z_{enc}/L_0$')
 ax2.set_ylabel(r'$-[(\rho_{bw})_\mathrm{T}]_{z_{i,f}}$')
 ax2.set_title('(b)',fontsize=24,loc='left')
 ax2.legend(loc='best',fontsize=18,handlelength=1,borderaxespad=0.1,ncol=2,columnspacing=1)
-ax3.set_xlabel(r'$\Delta u/[N_0(\Delta z_i)_c]$')
+ax3.set_xlabel(r'$\Delta U/[N_0(\Delta z_i)_c]$')
 ax3.set_ylabel(r'$[(\rho_{bw})_T]_{z_{i,f}}/[[(\rho_{bw})_T]_{z_{i,f}}]_c$')
 ax3.set_title('(c)',fontsize=24,loc='left')
 plt.tight_layout()
-plt.savefig(opath+'rho_bw_extended.pdf',bbox_inches='tight')
+plt.savefig(opath+'rho_bw_maxjump.pdf',bbox_inches='tight')
 plt.show()
 
 f, (ax1,ax2,ax3) = plt.subplots(1,3,figsize=(15,5))
@@ -396,11 +406,11 @@ ax2.set_xlabel(r'$z_{enc}/L_0$')
 ax2.set_ylabel(r'$-(\langle b^\prime w^\prime \rangle_\mathrm{T})_{z_{i,f}}$')
 ax2.set_title('(b)',fontsize=24,loc='left')
 ax2.legend(loc='best',fontsize=18,handlelength=1,borderaxespad=0.1,ncol=2,columnspacing=1)
-ax3.set_xlabel(r'$\Delta u/[N_0(\Delta z_i)_c]$')
+ax3.set_xlabel(r'$\Delta U/[N_0(\Delta z_i)_c]$')
 ax3.set_ylabel(r'$(\langle b^\prime w^\prime\rangle_T)_{z_{i,f}}/[(\langle b^\prime w^\prime \rangle_T)_{z_{i,f}}]_c$')
 ax3.set_title('(c)',fontsize=24,loc='left')
 plt.tight_layout()
-plt.savefig(opath+'s1_vflux_extended.pdf',bbox_inches='tight')
+plt.savefig(opath+'s1_vflux_maxjump.pdf',bbox_inches='tight')
 plt.show()
 
 axes = plt.gca()
@@ -410,7 +420,7 @@ plt.plot(S10.DeltaU[1:-1]/(N*0.25*S10.z_enc[1:-1]),runningmean(np.array(S10_vort
 plt.plot(S15.DeltaU[1:-1]/(N*0.25*S15.z_enc[1:-1]),runningmean(np.array(S15_vort_turbareafrac_zif)/np.array(S0_vort_turbareafrac_zif),1),c=blues(0.8),label=r'$Fr_0=15$')
 plt.plot(Delta_U[1:-1]/(N*0.25*z_enc[1:-1]),runningmean(np.array(S20_vort_turbareafrac_zif)/np.array(S0_vort_turbareafrac_zif),1),c=blues(0.9),label=r'$Fr_0=20$')
 plt.plot(S25.DeltaU[1:-1]/(N*0.25*S25.z_enc[1:-1]),runningmean(np.array(S25_vort_turbareafrac_zif)/np.array(S0_vort_turbareafrac_zif),1),c=blues(1.0),label=r'$Fr_0=25$')
-plt.xlabel(r'$\Delta u/[N_0(\Delta z_i)_c]$')
+plt.xlabel(r'$\Delta U/[N_0(\Delta z_i)_c]$')
 plt.ylabel(r'$(a_\mathrm{T})_{z_{i,f}}/((a_\mathrm{T})_{z_{i,f}})_c$')
 plt.legend(loc='best',handlelength=1,borderaxespad=0.1)
 plt.tight_layout()
@@ -425,7 +435,7 @@ plt.plot(S10.DeltaU[1:-1]/(N*0.25*S10.z_enc[1:-1]),runningmean(rho_bw_zif_S10_tu
 plt.plot(S15.DeltaU[1:-1]/(N*0.25*S15.z_enc[1:-1]),runningmean(rho_bw_zif_S15_turb/rho_bw_zif_S0_turb,1),c=blues(0.8),label=r'$Fr_0=15$')
 plt.plot(Delta_U[1:-1]/(N*0.25*z_enc[1:-1]),runningmean(rho_bw_zif_S20_turb/rho_bw_zif_S0_turb,1),c=blues(0.9),label=r'$Fr_0=20$')
 plt.plot(S25.DeltaU[1:-1]/(N*0.25*S25.z_enc[1:-1]),runningmean(rho_bw_zif_S25_turb/rho_bw_zif_S0_turb,1),c=blues(1.0),label=r'$Fr_0=25$')
-plt.xlabel(r'$\Delta u/[N_0(\Delta z_i)_c]$')
+plt.xlabel(r'$\Delta U/[N_0(\Delta z_i)_c]$')
 plt.ylabel(r'$(\rho_{bw})_{z_{i,f}}/((\rho_{bw})_{z_{i,f}})_c$')
 plt.legend(loc='best',fontsize=18,handlelength=1,borderaxespad=0.1,ncol=2,columnspacing=1)
 plt.tight_layout()
@@ -439,7 +449,7 @@ plt.ylim(0,1)
 plt.plot(S10.DeltaU[1:-1]/(N*0.25*S10.z_enc[1:-1]),runningmean((np.array(S10_vort_p2_v1_zif)-np.array(S10_vort_p2_s1_mean_zif)*np.array(S10_vort_p2_w_mean_zif))/(np.array(S0_vort_p2_v1_zif)-np.array(S0_vort_p2_s1_mean_zif)*np.array(S0_vort_p2_w_mean_zif)),1),c=blues(0.7),label=r'$Fr_0=10$')
 plt.plot(S15.DeltaU[1:-1]/(N*0.25*S15.z_enc[1:-1]),runningmean((np.array(S15_vort_p2_v1_zif)-np.array(S15_vort_p2_s1_mean_zif)*np.array(S15_vort_p2_w_mean_zif))/(np.array(S0_vort_p2_v1_zif)-np.array(S0_vort_p2_s1_mean_zif)*np.array(S0_vort_p2_w_mean_zif)),1),c=blues(0.8),label=r'$Fr_0=15$')
 plt.plot(Delta_U[1:-1]/(N*0.25*z_enc[1:-1]),runningmean((np.array(S20_vort_p2_v1_zif)-np.array(S20_vort_p2_s1_mean_zif)*np.array(S20_vort_p2_w_mean_zif))/(np.array(S0_vort_p2_v1_zif)-np.array(S0_vort_p2_s1_mean_zif)*np.array(S0_vort_p2_w_mean_zif)),1),c=blues(0.9),label=r'$Fr_0=20$')
-plt.xlabel(r'$\Delta u/[N_0(\Delta z_i)_c]$')
+plt.xlabel(r'$\Delta U/[N_0(\Delta z_i)_c]$')
 plt.ylabel(r'$(\langle b^\prime w^\prime \rangle_\mathrm{T})_{z_{i,f}}/((\langle b^\prime w^\prime \rangle_\mathrm{T})_{z_{i,f}})_c$')
 plt.legend(loc='best',handlelength=1)
 plt.tight_layout()
@@ -612,7 +622,7 @@ plt.plot(np.mean(S25.Rsv[4:7,:]/B0,axis=0),S25.y/np.mean(S25.z_enc[4:7]),c=blues
 # black_dashdot = mlines.Line2D([],[],c='k',ls='-.',label=r'$a_{T}a_{NT}(\langle b \rangle_{T} - \langle b \rangle_{NT})(\langle w \rangle_{T} - \langle w \rangle_{NT})$')
 # plt.legend(handles=[black_dot,black_solid,black_dashed,black_dashdot],loc='upper right',fontsize=20,frameon=False,handlelength=1)
 plt.tight_layout()
-plt.savefig(opath+'s1_vflux_contributions.pdf',bbox_inches='tight')
+plt.savefig(opath+'s1_vflux_contributions_maxjump.pdf',bbox_inches='tight')
 plt.show()
 
 
@@ -640,14 +650,41 @@ plt.show()
 
 axes = plt.gca()
 axes.grid(True)
-plt.plot(S0.z_enc[1:-1]/L0,-runningmean(S0_s1_flux_zif,1)/B0,c=blues(0.5))
-plt.plot(S05.z_enc[1:-1]/L0,-runningmean(S05_s1_flux_zif,1)/B0,c=blues(0.6))
-plt.plot(S10.z_enc[1:-1]/L0,-runningmean(S10_s1_flux_zif,1)/B0,c=blues(0.7))
-plt.plot(S15.z_enc[1:-1]/L0,-runningmean(S15_s1_flux_zif,1)/B0,c=blues(0.8))
-plt.plot(time[1:-1],-runningmean(S20_s1_flux_zif,1)/B0,c=blues(0.9))
-plt.plot(S25.z_enc[1:-1]/L0,-runningmean(S25_s1_flux_zif,1)/B0,c=blues(1.0))
+plt.plot(S0.z_enc[1:-1]/L0,-runningmean(S0_s1_flux_zif,1)/B0,c=blues(0.5),label=r'$Fr_0=0$')
+plt.plot(S05.z_enc[1:-1]/L0,-runningmean(S05_s1_flux_zif,1)/B0,c=blues(0.6),label=r'$Fr_0=5$')
+plt.plot(S10.z_enc[1:-1]/L0,-runningmean(S10_s1_flux_zif,1)/B0,c=blues(0.7),label=r'$Fr_0=10$')
+plt.plot(S15.z_enc[1:-1]/L0,-runningmean(S15_s1_flux_zif,1)/B0,c=blues(0.8),label=r'$Fr_0=15$')
+plt.plot(time[1:-1],-runningmean(S20_s1_flux_zif,1)/B0,c=blues(0.9),label=r'$Fr_0=20$')
+plt.plot(S25.z_enc[1:-1]/L0,-runningmean(S25_s1_flux_zif,1)/B0,c=blues(1.0),label=r'$Fr_0=25$')
 plt.xlabel(r'$z_{enc}/L_0$')
 plt.ylabel(r'$-(\langle b^\prime w^\prime \rangle)_{z_{i,f}}/B_0$')
 plt.tight_layout()
 plt.savefig(opath+'s1_vflux_total.pdf',bbox_inches='tight')
+plt.show()
+
+f, (ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
+ax1.grid(True,linewidth=1.5)
+ax2.grid(True,linewidth=1.5)
+ax1.tick_params(bottom=False,left=False)
+ax2.tick_params(bottom=False,left=False)
+ax1.set_ylim(0,0.3)
+ax2.set_ylim(0,3)
+ax1.plot(S0.z_enc[1:-1]/L0,-runningmean(S0_s1_flux_zif,1)/B0,c=blues(0.5),label=r'$Fr_0=0$')
+ax1.plot(S05.z_enc[1:-1]/L0,-runningmean(S05_s1_flux_zif,1)/B0,c=blues(0.6),label=r'$Fr_0=5$')
+ax1.plot(S10.z_enc[1:-1]/L0,-runningmean(S10_s1_flux_zif,1)/B0,c=blues(0.7),label=r'$Fr_0=10$')
+ax1.plot(S15.z_enc[1:-1]/L0,-runningmean(S15_s1_flux_zif,1)/B0,c=blues(0.8),label=r'$Fr_0=15$')
+ax1.plot(time[1:-1],-runningmean(S20_s1_flux_zif,1)/B0,c=blues(0.9),label=r'$Fr_0=20$')
+ax1.plot(S25.z_enc[1:-1]/L0,-runningmean(S25_s1_flux_zif,1)/B0,c=blues(1.0),label=r'$Fr_0=25$')
+ax2.plot(S05.DeltaU[1:-1]/(N*0.25*S05.z_enc[1:-1]),runningmean(np.array(S05_s1_flux_zif)/np.array(S0_s1_flux_zif),1),c=blues(0.6),label=r'$Fr_0=5$')
+ax2.plot(S10.DeltaU[1:-1]/(N*0.25*S10.z_enc[1:-1]),runningmean(np.array(S10_s1_flux_zif)/np.array(S0_s1_flux_zif[8:]),1),c=blues(0.7),label=r'$Fr_0=10$')
+ax2.plot(S15.DeltaU[1:-1]/(N*0.25*S15.z_enc[1:-1]),runningmean(np.array(S15_s1_flux_zif)/np.array(S0_s1_flux_zif[8:]),1),c=blues(0.8),label=r'$Fr_0=15$')
+ax2.plot(Delta_U[1:-1]/(N*0.25*z_enc[1:-1]),runningmean(np.array(S20_s1_flux_zif)/np.array(S0_s1_flux_zif[8:]),1),c=blues(0.9),label=r'$Fr_0=20$')
+ax2.plot(S25.DeltaU[1:-1]/(N*0.25*S25.z_enc[1:-1]),runningmean(np.array(S25_s1_flux_zif)/np.array(S0_s1_flux_zif[8:]),1),c=blues(1.0),label=r'$Fr_0=25$')
+ax1.set_xlabel(r'$z_{enc}/L_0$')
+ax1.set_ylabel(r'$\langle b^\prime w^\prime \rangle_{z_{i,f}} /B_0$')
+ax2.set_xlabel(r'$\Delta U/[N_0(\Delta z_i)_c]$')
+ax2.set_ylabel(r'$\langle b^\prime w^\prime \rangle_{z_{i,f}}/[\langle b^\prime w^\prime \rangle_{z_{i,f}}]_c$')
+ax1.legend(loc='best',handlelength=1,ncol=2,columnspacing=1,fontsize=18,borderaxespad=0.1)
+plt.tight_layout()
+plt.savefig(opath+'s1_vflux_total_DeltaU.pdf')
 plt.show()
