@@ -16,10 +16,10 @@ rc('font', size=24)
 rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 
-opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re025/Rapids/'
+opath = '/Volumes/Seagate/SCRATCH/plots/3D/Re025/Rapids/'
 colourmap_path = '/home/mpim/m300551/local/ScientificColourMaps5/'
 
-path = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/'
+path = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/'
 ##########################################################################
 
 def find_nearest_bisection(array,value):

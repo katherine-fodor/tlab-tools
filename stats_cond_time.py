@@ -17,7 +17,8 @@ rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 rc('lines', linewidth=2)
 
-opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re025/Rapids/'
+#opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re025/Rapids/'
+opath = '/Volumes/Seagate/SCRATCH/plots/3D/Re025/Rapids/'
 
 #######################################################################
 # Constants
@@ -44,13 +45,13 @@ def runningmean(timeseries,window):
 #######################################################################
 # Stats
 
-path_S0 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/2560x512x2560/'
-path_S05 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1280x512x1280-S05/'
-path_S10 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1280x512x1280-S10/'
-path_S15 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1536x576x1536-S15/'
-path_S20_1 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/S20-1536x576x1536/'
-path_S20_2 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/S20-1536x576x2304/'
-path_S25 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/2560x896x2560-S25/'
+path_S0 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/2560x512x2560/'
+path_S05 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/1280x512x1280-S05/'
+path_S10 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/1280x512x1280-S10/'
+path_S15 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/1536x576x1536-S15/'
+path_S20_1 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/S20-1536x576x1536/'
+path_S20_2 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/S20-1536x576x2304/'
+path_S25 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/2560x896x2560-S25/'
 
 # Max jump
 
@@ -81,8 +82,10 @@ S20_2 = Statistics(path_S20_2+'stats/pdftimes/avg39000-91000.nc')
 S25 = Statistics(path_S25+'stats/pdftimes/avg28000-128000.nc')
 
 S0_s1_var_zif = [S0.r2S[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
+S0_s2_var_zif = [S0.r2S2[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 S0_w_var_zif = [S0.Ryy[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 S0_s1_flux_zif = [S0.Rsv[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
+S0_s2_flux_zif = [S0.Rs2v[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 
 S05_s1_var_zif = [S05.r2S[n,S05.z_if_arg[n]] for n in range(0,S05.t_len)]
 S05_w_var_zif = [S05.Ryy[n,S05.z_if_arg[n]] for n in range(0,S05.t_len)]
@@ -189,10 +192,13 @@ S25_vort_p1_v1_zif = [S25_vort_int.P1v1[n,S25.z_if_arg[n]] for n in range(0,S25.
 # Turbulent
 
 S0_vort_p2_s1_mean_zif = [S0_vort_int.P2S1Mom1[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
+S0_vort_p2_s2_mean_zif = [S0_vort_int.P2S2Mom1[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 S0_vort_p2_w_mean_zif = [S0_vort_int.P2VMom1[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 S0_vort_p2_s1_var_zif = [S0_vort_int.P2S1Mom2[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
+S0_vort_p2_s2_var_zif = [S0_vort_int.P2S2Mom2[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 S0_vort_p2_w_var_zif = [S0_vort_int.P2VMom2[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 S0_vort_p2_v1_zif = [S0_vort_int.P2v1[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
+S0_vort_p2_v2_zif = [S0_vort_int.P2v2[n,S0.z_if_arg[n]] for n in range(0,S0.t_len)]
 
 S05_vort_p2_s1_mean_zif = [S05_vort_int.P2S1Mom1[n,S05.z_if_arg[n]] for n in range(0,S05.t_len)]
 S05_vort_p2_w_mean_zif = [S05_vort_int.P2VMom1[n,S05.z_if_arg[n]] for n in range(0,S05.t_len)]
@@ -254,6 +260,10 @@ w_enc = (B0*z_enc)**(1./3.)
 
 Delta_U = np.concatenate([S20_1.DeltaU,S20_2.DeltaU])
 
+# Correlations
+
+rho_s2w_S0 = S0.Rs2v/(S0.r2S2*S0.Ryy)**0.5
+rho_s2w_turb_S0 = (S0_vort_int.P2v2[4:7,:]-S0_vort_int.P2S2Mom1[4:7,:]*S0_vort_int.P2VMom1[4:7,:])/(S0_vort_int.P2S2Mom2[4:7,:]*S0_vort_int.P2VMom2[4:7,:])**0.5
 rho_bw_S0 = S0.Rsv/(S0.r2S*S0.Ryy)**0.5
 rho_bw_turb_S0 = (S0_vort_int.P2v1[4:7,:]-S0_vort_int.P2S1Mom1[4:7,:]*S0_vort_int.P2VMom1[4:7,:])/(S0_vort_int.P2S1Mom2[4:7,:]*S0_vort_int.P2VMom2[4:7,:])**0.5
 rho_bw_S05 = S05.Rsv/(S05.r2S*S05.Ryy)**0.5
@@ -266,7 +276,9 @@ rho_bw_S20 = S20_1.Rsv/(S20_1.r2S*S20_1.Ryy)**0.5
 rho_bw_S20_turb = (S20_vort_int_1.P2v1[4:,:]-S20_vort_int_1.P2S1Mom1[4:,:]*S20_vort_int_1.P2VMom1[4:,:])/(S20_vort_int_1.P2S1Mom2[4:,:]*S20_vort_int_1.P2VMom2[4:,:])**0.5
 rho_bw_S25 = S25.Rsv/(S25.r2S*S25.Ryy)**0.5
 rho_bw_turb_S25 = (S25_vort_int.P2v1[4:7,:]-S25_vort_int.P2S1Mom1[4:7,:]*S25_vort_int.P2VMom1[4:7,:])/(S25_vort_int.P2S1Mom2[4:7,:]*S25_vort_int.P2VMom2[4:7,:])**0.5
-    
+
+rho_s2w_zif_S0 = np.array(S0_s2_flux_zif)/(np.array(S0_s2_var_zif)*np.array(S0_w_var_zif))**0.5
+rho_s2w_zif_S0_turb = (np.array(S0_vort_p2_v2_zif)-np.array(S0_vort_p2_s2_mean_zif)*np.array(S0_vort_p2_w_mean_zif))/(np.array(S0_vort_p2_s2_var_zif)*np.array(S0_vort_p2_w_var_zif))**0.5
 rho_bw_zif_S0 = np.array(S0_s1_flux_zif)/(np.array(S0_s1_var_zif)*np.array(S0_w_var_zif))**0.5
 rho_bw_zif_S0_turb =  (np.array(S0_vort_p2_v1_zif)-np.array(S0_vort_p2_s1_mean_zif)*np.array(S0_vort_p2_w_mean_zif))/(np.array(S0_vort_p2_s1_var_zif)*np.array(S0_vort_p2_w_var_zif))**0.5
 rho_bw_zif_S05 = np.array(S05_s1_flux_zif)/(np.array(S05_s1_var_zif)*np.array(S05_w_var_zif))**0.5
@@ -279,6 +291,7 @@ rho_bw_zif_S20 = np.array(S20_s1_flux_zif)/(np.array(S20_s1_var_zif)*np.array(S2
 rho_bw_zif_S20_turb = (np.array(S20_vort_p2_v1_zif)-np.array(S20_vort_p2_s1_mean_zif)*np.array(S20_vort_p2_w_mean_zif))/(np.array(S20_vort_p2_s1_var_zif)*np.array(S20_vort_p2_w_var_zif))**0.5
 rho_bw_zif_S25 = np.array(S25_s1_flux_zif)/(np.array(S25_s1_var_zif)*np.array(S25_w_var_zif))**0.5
 rho_bw_zif_S25_turb =  (np.array(S25_vort_p2_v1_zif)-np.array(S25_vort_p2_s1_mean_zif)*np.array(S25_vort_p2_w_mean_zif))/(np.array(S25_vort_p2_s1_var_zif)*np.array(S25_vort_p2_w_var_zif))**0.5
+
 
 #######################################################################
 # Plot
@@ -340,12 +353,14 @@ ax1.set_ylim(0,1.4)
 ax1.set_xlim(-0.3,1)
 ax2.set_ylim(-0.05,0.3)
 ax2.set_xlim(10,30)
+ax1.plot(np.mean(rho_s2w_turb_S0,axis=0),S0.y/np.mean(S0.z_enc[4:7]),c='k')
 ax1.plot(np.mean(rho_bw_turb_S0,axis=0),S0.y/np.mean(S0.z_enc[4:7]),c=blues(0.5))
 ax1.plot(np.mean(rho_bw_turb_S05,axis=0),S05.y/np.mean(S05.z_enc[4:7]),c=blues(0.6))
 ax1.plot(np.mean(rho_bw_turb_S10,axis=0),S10.y/np.mean(S10.z_enc[4:7]),c=blues(0.7))
 ax1.plot(np.mean(rho_bw_turb_S15,axis=0),S15.y/np.mean(S15.z_enc[4:7]),c=blues(0.8))
 ax1.plot(np.mean(rho_bw_S20_turb,axis=0),S20_1.y/np.mean(S20_1.z_enc[4:]),c=blues(0.9))
 ax1.plot(np.mean(rho_bw_turb_S25,axis=0),S25.y/np.mean(S25.z_enc[4:7]),c=blues(1.0))
+ax2.plot(S0.z_enc[1:-1]/L0,-runningmean(rho_s2w_zif_S0_turb,1),c='k')
 ax2.plot(S0.z_enc[1:-1]/L0,-runningmean(rho_bw_zif_S0_turb,1),c=blues(0.5),label=r'$Fr_0=0$')
 ax2.plot(S05.z_enc[1:-1]/L0,-runningmean(rho_bw_zif_S05_turb,1),c=blues(0.6),label=r'$Fr_0=5$')
 ax2.plot(S10.z_enc[1:-1]/L0,-runningmean(rho_bw_zif_S10_turb,1),c=blues(0.7),label=r'$Fr_0=10$')

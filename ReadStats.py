@@ -186,6 +186,7 @@ class Conditional_Stats:
                 datafile_avgMom_p1 = nc.Dataset(path_avgMom_p1,'r')
                 self.P1tauy1 = datafile_avgMom_p1.variables['tauy1Mom1'][:,:] # molecular vertical buoyancy flux
                 self.P1v1 = datafile_avgMom_p1.variables['v1Mom1'][:,:] # turbulent vertical buoyancy flux
+                self.P1v2 = datafile_avgMom_p1.variables['v2Mom1'][:,:] # turbulent vertical flux of scalar 2
 
         if data_path_partition2 is not None:
             path_avgMom_p2 = path_partition2.replace('cavg','avgMom')
@@ -194,6 +195,7 @@ class Conditional_Stats:
                 datafile_avgMom_p2 = nc.Dataset(path_avgMom_p2,'r')
                 self.P2tauy1 = datafile_avgMom_p2.variables['tauy1Mom1'][:,:]
                 self.P2v1 = datafile_avgMom_p2.variables['v1Mom1'][:,:] # same as above but for partiton 2...
+                self.P2v2 = datafile_avgMom_p2.variables['v2Mom1'][:,:]
         
     
         
