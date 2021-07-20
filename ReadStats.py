@@ -46,6 +46,10 @@ class Statistics:
         
         self.Eta   = datafile_avg.variables['Eta'  ][:,:] # Kolmogorov scale
         
+        self.Pixx  = datafile_avg.variables['PIxx' ][:,:] # streamwise pressure-strain correlation
+        self.Piyy  = datafile_avg.variables['PIyy' ][:,:] # vertical pressure-strain correlation
+        self.Pizz  = datafile_avg.variables['PIzz' ][:,:] # spanwise pressure-strain correlation
+        
         # avg1s statistics 
         path_avg1s = path_avg.replace('avg','avg1s')	  # assume that name is the same except for avg -> avg1s	
         datafile_avg1s = nc.Dataset(path_avg1s, 'r')
