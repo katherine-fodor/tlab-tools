@@ -44,7 +44,7 @@ class Statistics:
         self.Eps   = datafile_avg.variables['Eps'  ][:,:] # viscous dissipation rate
         self.Tke_t = datafile_avg.variables['Tke_t'][:,:] # time rate of change of TKE
         
-        self.Eta   = datafile_avg.variables['Eta'  ][:,:] # Kolmogorov scale
+        #self.Eta   = datafile_avg.variables['Eta'  ][:,:] # Kolmogorov scale
         
         self.Pixx  = datafile_avg.variables['PIxx' ][:,:] # streamwise pressure-strain correlation
         self.Piyy  = datafile_avg.variables['PIyy' ][:,:] # vertical pressure-strain correlation
