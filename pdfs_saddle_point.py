@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[2]:
+
+
 #!/usr/bin/python3
 
 from ReadStats import Statistics, Pdfs 
@@ -15,16 +21,20 @@ rc('axes', linewidth=1.5)
 rc('axes', labelsize=24)
 rc('lines', linewidth=2)
 
-opath = '/scratch/local1/m300551/ForKatherine/plots/3D/Re025/Rapids/'
+opath = '/Volumes/Seagate/SCRATCH/plots/3D/Re025/Rapids/'
 
-path_S0    = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/2560x512x2560/'
-path_S05   = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1280x512x1280-S05/'
-path_S10   = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1280x512x1280-S10/'
-path_S15   = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/1536x576x1536-S15/'
-path_S20_1 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/S20-1536x576x1536/'
-path_S20_2 = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/S20-1536x576x2304/'
-path_S25   = '/scratch/local1/m300551/ForKatherine/qCBL_3D/Re025/2560x896x2560-S25/'
-##########################################################################
+path_S0    = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/2496x512x2496-S00/'
+path_S05   = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/1280x512x1280-S05/'
+path_S10   = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/1280x512x1280-S10/'
+path_S15   = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/1536x576x1536-S15/'
+path_S20_1 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/S20-1536x576x1536/'
+path_S20_2 = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/S20-1536x576x2304/'
+path_S25   = '/Volumes/Seagate/SCRATCH/qCBL_3D/Re025/2560x896x2560-S25/'
+
+
+# In[4]:
+
+
 # Constants
 
 nu = 1./15000.
@@ -33,7 +43,9 @@ N = np.sqrt(3)
 L0 = (B0/N**3)**0.5
 ceps = 0.1
 
-#######################################################################
+
+# In[3]:
+
 
 def runningmean(timeseries,window):
     """
@@ -50,67 +62,14 @@ def runningmean(timeseries,window):
         outseries[n-window] = np.mean(timeseries[n-window:n+window+1])
     return outseries
 
-def find_nearest_bisection(array,value):
-    """
-    Returns an index j such that ``value`` is between array[j]
-    and array[j+1]. ``array`` must be monotonic increasing. j=-1 or j=len(array) is returned
-    to indicate that ``value`` is out of range below and above respectively.
-    """
 
-    n = len(array)
-    if (value < array[0]):
-        return -1
-    elif (value > array[n-1]):
-        return n
-    jl = 0                      # Initialize lower
-    ju = n-1                    # and upper limits.
-    while (ju-jl > 1):          # If we are not yet done,
-        jm=(ju+jl) >> 1         # compute a midpoint with a bitshift
-        if (value >= array[jm]):
-            jl=jm               # and replace either the lower limit
-        else:
-            ju=jm               # or the upper limit, as appropriate.
-                                # Repeat until the test condition is satisfied.
-    if (value == array[0]):     # edge cases at bottom
-        return 0
-    elif (value == array[n-1]): # and top
-        return n-1
-    else:
-        return jl
+# In[4]:
 
-def running_average(x,f,dx,m):
-    """
-    Calculate running average over dx at equally spaced m points.
-    Assuming the independent variable x is non-decreasing.
-    """
 
-    # Defining the final independent variable
-    yl = x[0]  +0.5 *dx
-    jl = find_nearest_bisection(x,yl)
-    yr = x[-1] -0.5 *dx
-    jr = find_nearest_bisection(x,yr)
-    y = np.linspace(yl,yr,m)
+#Stats
+# Data is at every one z_enc/L_0 from z_enc/L_0 = 15 to 30.
 
-    avg = np.empty(m)
-    std = np.empty(m)
-
-    for j in range(m):
-        yl = y[j] -0.5 *dx
-        jl = find_nearest_bisection(x,yl)
-        yr = y[j] +0.5 *dx
-        jr = find_nearest_bisection(x,yr)
-
-        avg[j] = np.trapz(  f[jl:jr]            ,x[jl:jr]) /( x[jr-1]-x[jl] )
-        std[j] = np.trapz( (f[jl:jr]-avg[j])**2.,x[jl:jr]) /( x[jr-1]-x[jl] )
-
-    std = np.sqrt( std )
-
-    return y, avg, std
-
-##########################################################################
-# Stats
-
-S0    = Statistics(path_S0+'stats/pdftimes/avg10000-54000.nc')
+S0    = Statistics(path_S0+'stats/pdftimes/avg9500-53000.nc')
 S05   = Statistics(path_S05+'stats/pdftimes/avg12000-67000.nc')
 S10   = Statistics(path_S10+'stats/pdftimes/avg13000-84000.nc')
 S15   = Statistics(path_S15+'stats/pdftimes/avg15000-92000.nc')
@@ -128,21 +87,114 @@ z_enc_runningmean_S15 = runningmean(S15.z_enc,1)
 z_enc_runningmean_S20 = runningmean(z_enc_S20,1)
 z_enc_runningmean_S25 = runningmean(S25.z_enc,1)
 
-############################################################################
-# Pdf
 
-vortlist_S0 = [path_S0+'stats/pdfs/pdf10000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf11000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf13000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf15000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf17000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf19000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf24000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf27000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf30000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf32500.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf36500.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf40500.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf45000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf49000.LnEnstrophyW_iW_i',path_S0+'stats/pdfs/pdf54000.LnEnstrophyW_iW_i']
+# In[5]:
 
-vortlist_S05 = [path_S05+'stats/pdfs/pdf12000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf14000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf17000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf19000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf22000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf25000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf31000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf34000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf38000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf42000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf47000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf52000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf57000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf62000.LnEnstrophyW_iW_i',path_S05+'stats/pdfs/pdf67000.LnEnstrophyW_iW_i']
 
-vortlist_S10 = [path_S10+'stats/pdfs/pdf13000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf16000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf18000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf24000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf32000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf37000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf41000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf46000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf52000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf58000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf64000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf70000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf77000.LnEnstrophyW_iW_i',path_S10+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i']
+# Pdfs
+# Data is at every one z_enc/L_0 from z_enc/L_0 = 15 to 30.
 
-vortlist_S15 = [path_S15+'stats/pdfs/pdf15000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf18000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf24000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf27000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf31000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf35000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf40000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf45000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf50000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf56000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf63000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf69000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf76000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i',path_S15+'stats/pdfs/pdf92000.LnEnstrophyW_iW_i']
+vortlist_S0 = [path_S0+'stats/pdfs/pdf9500.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf11000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf13000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf14500.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf16000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf18000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf23000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf26000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf29000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf32000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf36000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf40000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf44000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf48000.LnEnstrophyW_iW_i',
+               path_S0+'stats/pdfs/pdf53000.LnEnstrophyW_iW_i']
 
-vortlist_S20_1 = [path_S20_1+'stats/pdfs/pdf17000.LnEnstrophyW_iW_i',path_S20_1+'stats/pdfs/pdf19000.LnEnstrophyW_iW_i',path_S20_1+'stats/pdfs/pdf22000.LnEnstrophyW_iW_i',path_S20_1+'stats/pdfs/pdf25000.LnEnstrophyW_iW_i',path_S20_1+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',path_S20_1+'stats/pdfs/pdf31000.LnEnstrophyW_iW_i',path_S20_1+'stats/pdfs/pdf35000.LnEnstrophyW_iW_i']
-vortlist_S20_2 = [path_S20_2+'stats/pdfs/pdf39000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf44000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf50000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf63000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf64000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf67000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf75000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i',path_S20_2+'stats/pdfs/pdf91000.LnEnstrophyW_iW_i']
+vortlist_S05 = [path_S05+'stats/pdfs/pdf12000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf14000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf17000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf19000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf22000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf25000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf31000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf34000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf38000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf42000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf47000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf52000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf57000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf62000.LnEnstrophyW_iW_i',
+                path_S05+'stats/pdfs/pdf67000.LnEnstrophyW_iW_i']
 
-vortlist_S25 = [path_S25+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf32000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf36000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf41000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf46000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf51000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf57000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf63000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf70000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf77000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf85000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf93000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf101000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf110000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf119000.LnEnstrophyW_iW_i',path_S25+'stats/pdfs/pdf128000.LnEnstrophyW_iW_i']
+vortlist_S10 = [path_S10+'stats/pdfs/pdf13000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf16000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf18000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf24000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf32000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf37000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf41000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf46000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf52000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf58000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf64000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf70000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf77000.LnEnstrophyW_iW_i',
+                path_S10+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i']
+
+vortlist_S15 = [path_S15+'stats/pdfs/pdf15000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf18000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf21000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf24000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf27000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf31000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf35000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf40000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf45000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf50000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf56000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf63000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf69000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf76000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i',
+                path_S15+'stats/pdfs/pdf92000.LnEnstrophyW_iW_i']
+
+vortlist_S20_1 = [path_S20_1+'stats/pdfs/pdf17000.LnEnstrophyW_iW_i',
+                  path_S20_1+'stats/pdfs/pdf19000.LnEnstrophyW_iW_i',
+                  path_S20_1+'stats/pdfs/pdf22000.LnEnstrophyW_iW_i',
+                  path_S20_1+'stats/pdfs/pdf25000.LnEnstrophyW_iW_i',
+                  path_S20_1+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',
+                  path_S20_1+'stats/pdfs/pdf31000.LnEnstrophyW_iW_i',
+                  path_S20_1+'stats/pdfs/pdf35000.LnEnstrophyW_iW_i']
+vortlist_S20_2 = [path_S20_2+'stats/pdfs/pdf39000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf44000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf50000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf63000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf64000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf67000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf75000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i',
+                  path_S20_2+'stats/pdfs/pdf91000.LnEnstrophyW_iW_i']
+
+vortlist_S25 = [path_S25+'stats/pdfs/pdf28000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf32000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf36000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf41000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf46000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf51000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf57000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf63000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf70000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf77000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf85000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf93000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf101000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf110000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf119000.LnEnstrophyW_iW_i',
+                path_S25+'stats/pdfs/pdf128000.LnEnstrophyW_iW_i']
 
 
 vortpdf_S0    = Pdfs(vortlist_S0,path_S0+'y.dat')
@@ -153,15 +205,24 @@ vortpdf_S20_1 = Pdfs(vortlist_S20_1,path_S20_1+'y.dat')
 vortpdf_S20_2 = Pdfs(vortlist_S20_2,path_S20_2+'y.dat')
 vortpdf_S25   = Pdfs(vortlist_S25,path_S25+'y.dat')
 
-# Create grid on which to interpolate pdfs
 
-S0_vortpdf_interp_data    = Pdfs([path_S0+'stats/pdfs/pdf45000.LnEnstrophyW_iW_i'],path_S0+'y.dat')
+# In[6]:
+
+
+# Create grid on which to interpolate pdfs
+# Doesn't really matter which one is used, as long as it's the same in PDFs.ipynb
+
+S0_vortpdf_interp_data    = Pdfs([path_S0+'stats/pdfs/pdf48000.LnEnstrophyW_iW_i'],path_S0+'y.dat')
 S05_vortpdf_interp_data   = Pdfs([path_S05+'stats/pdfs/pdf57000.LnEnstrophyW_iW_i'],path_S05+'y.dat')
 S10_vortpdf_interp_data   = Pdfs([path_S10+'stats/pdfs/pdf84000.LnEnstrophyW_iW_i'],path_S10+'y.dat')
 S15_vortpdf_interp_data   = Pdfs([path_S15+'stats/pdfs/pdf76000.LnEnstrophyW_iW_i'],path_S15+'y.dat')
 S20_vortpdf_interp_data   = Pdfs([path_S20_2+'stats/pdfs/pdf75000.LnEnstrophyW_iW_i'],path_S20_2+'y.dat')
 S25_vortpdf_interp_data   = Pdfs([path_S25+'stats/pdfs/pdf110000.LnEnstrophyW_iW_i'],path_S25+'y.dat')
-        
+
+
+# In[7]:
+
+
 # Interpolate pdfs in x-direction
 
 S0_vortpdf_interp = np.zeros((len(vortlist_S0),S0.y_len,vortpdf_S0.nb))
@@ -202,6 +263,9 @@ for n in range(len(vortlist_S25)):
         S25_vortpdf_interp[n,j,:] = np.interp(S25_vortpdf_interp_data.xy[0,0,j,:],vortpdf_S25.xy[0,n,j,:],vortpdf_S25.pdf[n,j,:-2])
 
 
+# In[8]:
+
+
 # Running mean of pdfs
 
 S0_vortpdf_interp_runmean = np.zeros((np.ma.size(S0_vortpdf_interp,0)-2,S0.y_len,vortpdf_S0.nb))
@@ -229,272 +293,128 @@ for n in range(1,np.ma.size(S25_vortpdf_interp,0)-1):
     S25_vortpdf_interp_runmean[n-1,:,:] = np.mean(S25_vortpdf_interp[n-1:n+2,:,:],axis=0)
 
 
-# Find where pdf has a maximum at each height
+# In[9]:
 
-maxvort_S0 = np.zeros((np.ma.size(S0_vortpdf_interp_runmean,0),S0.y_len))
-maxprob_vort_S0 = np.zeros((np.ma.size(S0_vortpdf_interp_runmean,0),S0.y_len))
+
+# Find mean of pdf at each height
+
+meanvort_S0 = np.zeros((np.ma.size(S0_vortpdf_interp_runmean,0),S0.y_len))
+meanprob_vort_S0 = np.zeros((np.ma.size(S0_vortpdf_interp_runmean,0),S0.y_len))
 for t in range(0,np.ma.size(S0_vortpdf_interp_runmean,0)):
     for j in range(0,S0.y_len):
-        maxvort_S0[t,j] = S0_vortpdf_interp_data.xy[0,0,j,np.argmax(S0_vortpdf_interp_runmean[t,j,:])]
-        maxprob_vort_S0[t,j] = np.max(S0_vortpdf_interp_runmean[t,j,:])
-maxvort_S0 = np.log10(np.exp(maxvort_S0)/(ceps*B0/nu))
+        meanvort_S0[t,j] = np.average(S0_vortpdf_interp_data.xy[0,0,j,:],weights=S0_vortpdf_interp_runmean[t,j,:])
+        meanprob_vort_S0[t,j] = S0_vortpdf_interp_runmean[t,j,np.argmin( np.abs(S0_vortpdf_interp_data.xy[0,0,j,:] -meanvort_S0[t,j]) )]
+meanvort_S0 = np.log10(np.exp(meanvort_S0)/(ceps*B0/nu))
 
-maxvort_S05 = np.zeros((np.ma.size(S05_vortpdf_interp_runmean,0),S05.y_len))
-maxprob_vort_S05 = np.zeros((np.ma.size(S05_vortpdf_interp_runmean,0),S05.y_len))
+meanvort_S05 = np.zeros((np.ma.size(S05_vortpdf_interp_runmean,0),S05.y_len))
+meanprob_vort_S05 = np.zeros((np.ma.size(S05_vortpdf_interp_runmean,0),S05.y_len))
 for t in range(0,np.ma.size(S05_vortpdf_interp_runmean,0)):
     for j in range(0,S05.y_len):
-        maxvort_S05[t,j] = S05_vortpdf_interp_data.xy[0,0,j,np.argmax(S05_vortpdf_interp_runmean[t,j,:])]
-        maxprob_vort_S05[t,j] = np.max(S05_vortpdf_interp_runmean[t,j,:])
-maxvort_S05 = np.log10(np.exp(maxvort_S05)/(ceps*B0/nu))
+        meanvort_S05[t,j] = np.average(S05_vortpdf_interp_data.xy[0,0,j,:],weights=S05_vortpdf_interp_runmean[t,j,:])
+        meanprob_vort_S05[t,j] = S05_vortpdf_interp_runmean[t,j,np.argmin( np.abs(S05_vortpdf_interp_data.xy[0,0,j,:] -meanvort_S05[t,j]) )]
+meanvort_S05 = np.log10(np.exp(meanvort_S05)/(ceps*B0/nu))
 
-maxvort_S10 = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
-maxprob_vort_S10 = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
+meanvort_S10 = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
+meanprob_vort_S10 = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
 for t in range(0,np.ma.size(S10_vortpdf_interp_runmean,0)):
     for j in range(0,S10.y_len):
-        maxvort_S10[t,j] = S10_vortpdf_interp_data.xy[0,0,j,np.argmax(S10_vortpdf_interp_runmean[t,j,:])]
-        maxprob_vort_S10[t,j] = np.max(S10_vortpdf_interp_runmean[t,j,:])
-maxvort_S10 = np.log10(np.exp(maxvort_S10)/(ceps*B0/nu))
+        meanvort_S10[t,j] = np.average(S10_vortpdf_interp_data.xy[0,0,j,:],weights=S10_vortpdf_interp_runmean[t,j,:])
+        meanprob_vort_S10[t,j] = S10_vortpdf_interp_runmean[t,j,np.argmin( np.abs(S10_vortpdf_interp_data.xy[0,0,j,:] -meanvort_S10[t,j]) )]
+meanvort_S10 = np.log10(np.exp(meanvort_S10)/(ceps*B0/nu))
 
-maxvort_S15 = np.zeros((np.ma.size(S15_vortpdf_interp_runmean,0),S15.y_len))
-maxprob_vort_S15 = np.zeros((np.ma.size(S15_vortpdf_interp_runmean,0),S15.y_len))
+meanvort_S15 = np.zeros((np.ma.size(S15_vortpdf_interp_runmean,0),S15.y_len))
+meanprob_vort_S15 = np.zeros((np.ma.size(S15_vortpdf_interp_runmean,0),S15.y_len))
 for t in range(0,np.ma.size(S15_vortpdf_interp_runmean,0)):
     for j in range(0,S15.y_len):
-        maxvort_S15[t,j] = S15_vortpdf_interp_data.xy[0,0,j,np.argmax(S15_vortpdf_interp_runmean[t,j,:])]
-        maxprob_vort_S15[t,j] = np.max(S15_vortpdf_interp_runmean[t,j,:])
-maxvort_S15 = np.log10(np.exp(maxvort_S15)/(ceps*B0/nu))
+        meanvort_S15[t,j] = np.average(S15_vortpdf_interp_data.xy[0,0,j,:],weights=S15_vortpdf_interp_runmean[t,j,:])
+        meanprob_vort_S15[t,j] = S15_vortpdf_interp_runmean[t,j,np.argmin( np.abs(S15_vortpdf_interp_data.xy[0,0,j,:] -meanvort_S15[t,j]) )]
+meanvort_S15 = np.log10(np.exp(meanvort_S15)/(ceps*B0/nu))
 
-maxvort_S20 = np.zeros((np.ma.size(S20_vortpdf_interp_runmean,0),S20_1.y_len))
-maxprob_vort_S20 = np.zeros((np.ma.size(S20_vortpdf_interp_runmean,0),S20_1.y_len))
+meanvort_S20 = np.zeros((np.ma.size(S20_vortpdf_interp_runmean,0),S20_1.y_len))
+meanprob_vort_S20 = np.zeros((np.ma.size(S20_vortpdf_interp_runmean,0),S20_1.y_len))
 for t in range(0,np.ma.size(S20_vortpdf_interp_runmean,0)):
     for j in range(0,S20_1.y_len):
-        maxvort_S20[t,j] = S20_vortpdf_interp_data.xy[0,0,j,np.argmax(S20_vortpdf_interp_runmean[t,j,:])]
-        maxprob_vort_S20[t,j] = np.max(S20_vortpdf_interp_runmean[t,j,:])
-maxvort_S20 = np.log10(np.exp(maxvort_S20)/(ceps*B0/nu))
+        meanvort_S20[t,j] = np.average(S20_vortpdf_interp_data.xy[0,0,j,:],weights=S20_vortpdf_interp_runmean[t,j,:])
+        meanprob_vort_S20[t,j] = S20_vortpdf_interp_runmean[t,j,np.argmin( np.abs(S20_vortpdf_interp_data.xy[0,0,j,:] -meanvort_S20[t,j]) )]
+meanvort_S20 = np.log10(np.exp(meanvort_S20)/(ceps*B0/nu))
 
-maxvort_S25 = np.zeros((np.ma.size(S25_vortpdf_interp_runmean,0),S25.y_len))
-maxprob_vort_S25 = np.zeros((np.ma.size(S25_vortpdf_interp_runmean,0),S25.y_len))
+meanvort_S25 = np.zeros((np.ma.size(S25_vortpdf_interp_runmean,0),S25.y_len))
+meanprob_vort_S25 = np.zeros((np.ma.size(S25_vortpdf_interp_runmean,0),S25.y_len))
 for t in range(0,np.ma.size(S25_vortpdf_interp_runmean,0)):
     for j in range(0,S25.y_len):
-        maxvort_S25[t,j] = S25_vortpdf_interp_data.xy[0,0,j,np.argmax(S25_vortpdf_interp_runmean[t,j,:])]
-        maxprob_vort_S25[t,j] = np.max(S25_vortpdf_interp_runmean[t,j,:])
-maxvort_S25 = np.log10(np.exp(maxvort_S25)/(ceps*B0/nu))
+        meanvort_S25[t,j] = np.average(S25_vortpdf_interp_data.xy[0,0,j,:],weights=S25_vortpdf_interp_runmean[t,j,:])
+        meanprob_vort_S25[t,j] = S25_vortpdf_interp_runmean[t,j,np.argmin( np.abs(S25_vortpdf_interp_data.xy[0,0,j,:] -meanvort_S25[t,j]) )]
+meanvort_S25 = np.log10(np.exp(meanvort_S25)/(ceps*B0/nu))
 
-# Find saddle based on max gradient in smoothed maxvort data
 
-samplesize = 200    # number of points to discretize the profile
-dy = 0.05           # interval for the local average
-j_min =100          # To skip the maximum near the bottom
-j_max =-100          # To skip the maximum near the top and the large grid steps there
+# In[10]:
 
-maxvort_avg_S0 = [ running_average( S0.y[j_min:j_max]/z_enc_runningmean_S0[t], maxvort_S0[t,j_min:j_max], dy, samplesize ) for t in range(np.ma.size(S0_vortpdf_interp_runmean,0)) ]
-maxvort_avg_S05 = [ running_average( S05.y[j_min:j_max]/z_enc_runningmean_S05[t], maxvort_S05[t,j_min:j_max], dy, samplesize ) for t in range(np.ma.size(S05_vortpdf_interp_runmean,0)) ]
-maxvort_avg_S10 = [ running_average( S10.y[j_min:j_max]/z_enc_runningmean_S10[t], maxvort_S10[t,j_min:j_max], dy, samplesize ) for t in range(np.ma.size(S10_vortpdf_interp_runmean,0)) ]
-maxvort_avg_S15 = [ running_average( S15.y[j_min:j_max]/z_enc_runningmean_S15[t], maxvort_S15[t,j_min:j_max], dy, samplesize ) for t in range(np.ma.size(S15_vortpdf_interp_runmean,0)) ]
-maxvort_avg_S20 = [ running_average( S20_1.y[j_min:j_max]/z_enc_runningmean_S20[t], maxvort_S20[t,j_min:j_max], dy, samplesize ) for t in range(np.ma.size(S20_vortpdf_interp_runmean,0)) ]
-maxvort_avg_S25 = [ running_average( S25.y[j_min:j_max]/z_enc_runningmean_S25[t], maxvort_S25[t,j_min:j_max], dy, samplesize ) for t in range(np.ma.size(S25_vortpdf_interp_runmean,0)) ]
 
-j_saddle_S0 =[ np.abs( np.gradient(maxvort_avg_S0[t][1],maxvort_avg_S0[t][0]) ).argmax() for t in range(np.ma.size(S0_vortpdf_interp_runmean,0)) ]
-j_saddle_S05 =[ np.abs( np.gradient(maxvort_avg_S05[t][1],maxvort_avg_S05[t][0]) ).argmax() for t in range(np.ma.size(S05_vortpdf_interp_runmean,0)) ]
-j_saddle_S10 =[ np.abs( np.gradient(maxvort_avg_S10[t][1],maxvort_avg_S10[t][0]) ).argmax() for t in range(np.ma.size(S10_vortpdf_interp_runmean,0)) ]
-j_saddle_S15 =[ np.abs( np.gradient(maxvort_avg_S15[t][1],maxvort_avg_S15[t][0]) ).argmax() for t in range(np.ma.size(S15_vortpdf_interp_runmean,0)) ]
-j_saddle_S20 =[ np.abs( np.gradient(maxvort_avg_S20[t][1],maxvort_avg_S20[t][0]) ).argmax() for t in range(np.ma.size(S20_vortpdf_interp_runmean,0)) ]
-j_saddle_S25 =[ np.abs( np.gradient(maxvort_avg_S25[t][1],maxvort_avg_S25[t][0]) ).argmax() for t in range(np.ma.size(S25_vortpdf_interp_runmean,0)) ]
+# Find saddle as point where meanprob has a minimum
 
-y_saddle_S0 = [ maxvort_avg_S0[t][0][j_saddle_S0[t]] for t in range(len(j_saddle_S0)) ]
-y_saddle_S05 = [ maxvort_avg_S05[t][0][j_saddle_S05[t]] for t in range(len(j_saddle_S05)) ]
-y_saddle_S10 = [ maxvort_avg_S10[t][0][j_saddle_S10[t]] for t in range(len(j_saddle_S10)) ]
-y_saddle_S15 = [ maxvort_avg_S15[t][0][j_saddle_S15[t]] for t in range(len(j_saddle_S15)) ]
-y_saddle_S20 = [ maxvort_avg_S20[t][0][j_saddle_S20[t]] for t in range(len(j_saddle_S20)) ]
-y_saddle_S25 = [ maxvort_avg_S25[t][0][j_saddle_S25[t]] for t in range(len(j_saddle_S25)) ]
+y_vort_S0_saddle = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
+meanvort_S0_saddle = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
+for t in range(np.ma.size(S0_vortpdf_interp_runmean,0)):
+    j_min = np.argmin(np.abs(S0.y -0.5 *z_enc_runningmean_S0[t]))
+    j_max = np.argmin(np.abs(S0.y -2.0 *z_enc_runningmean_S0[t]))
 
-x_saddle_S0 = [ maxvort_avg_S0[t][1][j_saddle_S0[t]] for t in range(len(j_saddle_S0)) ]
-x_saddle_S05 = [ maxvort_avg_S05[t][1][j_saddle_S05[t]] for t in range(len(j_saddle_S05)) ]
-x_saddle_S10 = [ maxvort_avg_S10[t][1][j_saddle_S10[t]] for t in range(len(j_saddle_S10)) ]
-x_saddle_S15 = [ maxvort_avg_S15[t][1][j_saddle_S15[t]] for t in range(len(j_saddle_S15)) ]
-x_saddle_S20 = [ maxvort_avg_S20[t][1][j_saddle_S20[t]] for t in range(len(j_saddle_S20)) ]
-x_saddle_S25 = [ maxvort_avg_S25[t][1][j_saddle_S25[t]] for t in range(len(j_saddle_S25)) ]
+    y_vort_S0_saddle[t] = S0.y[np.argmin(meanprob_vort_S0[t,j_min:j_max])+j_min]
+    meanvort_S0_saddle[t] = meanvort_S0[t,np.argmin(np.abs(y_vort_S0_saddle[t]-S0.y))]
+    y_vort_S0_saddle[t] = y_vort_S0_saddle[t]/z_enc_runningmean_S0[t]
 
-# Find saddle based on largest jump in maxvort away from boundaries
+y_vort_S05_saddle = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
+meanvort_S05_saddle = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
+for t in range(np.ma.size(S05_vortpdf_interp_runmean,0)):
+    j_min = np.argmin(np.abs(S05.y -0.5 *z_enc_runningmean_S05[t]))
+    j_max = np.argmin(np.abs(S05.y -2.0 *z_enc_runningmean_S05[t]))
 
-# S0_jumps = np.zeros((np.ma.size(S0_vortpdf_interp_runmean,0),S0.y_len))
-# maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# y_maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# maxvort_it_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S0_vortpdf_interp_runmean,0)):
-#     for j in range(S0.z_enc_arg[t],S0.y_len-100):
-#         S0_jumps[t,j] = np.abs(maxvort_S0[t,j+1])-np.abs(maxvort_S0[t,j])
-#     maxit_vort_S0[t] = np.argmax(S0_jumps[t,:])
-#     y_maxit_vort_S0[t] = S0.y[int(maxit_vort_S0[t])]/z_enc_runningmean_S0[t]
-#     maxvort_it_S0[t] = (maxvort_S0[t,int(maxit_vort_S0[t]+1)]+maxvort_S0[t,int(maxit_vort_S0[t])])/2
+    y_vort_S05_saddle[t] = S05.y[np.argmin(meanprob_vort_S05[t,j_min:j_max])+j_min]
+    meanvort_S05_saddle[t] = meanvort_S05[t,np.argmin(np.abs(y_vort_S05_saddle[t]-S05.y))]
+    y_vort_S05_saddle[t] = y_vort_S05_saddle[t]/z_enc_runningmean_S05[t]
 
-# S05_jumps = np.zeros((np.ma.size(S05_vortpdf_interp_runmean,0),S05.y_len))
-# maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# y_maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# maxvort_it_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S05_vortpdf_interp_runmean,0)):
-#     for j in range(S05.z_enc_arg[t],S05.y_len-100):
-#         S05_jumps[t,j] = np.abs(maxvort_S05[t,j+1])-np.abs(maxvort_S05[t,j])
-#     maxit_vort_S05[t] = np.argmax(S05_jumps[t,:])
-#     y_maxit_vort_S05[t] = S05.y[int(maxit_vort_S05[t])]/z_enc_runningmean_S05[t]
-#     maxvort_it_S05[t] = (maxvort_S05[t,int(maxit_vort_S05[t]+1)]+maxvort_S05[t,int(maxit_vort_S05[t])])/2
+y_vort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+meanvort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
+for t in range(np.ma.size(S10_vortpdf_interp_runmean,0)):
+    j_min = np.argmin(np.abs(S10.y -0.5 *z_enc_runningmean_S10[t]))
+    j_max = np.argmin(np.abs(S10.y -2.0 *z_enc_runningmean_S10[t]))
 
-# S10_jumps = np.zeros((np.ma.size(S10_vortpdf_interp_runmean,0),S10.y_len))
-# maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# y_maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# maxvort_it_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S10_vortpdf_interp_runmean,0)):
-#     for j in range(S10.z_enc_arg[t],S10.y_len-100):
-#         S10_jumps[t,j] = np.abs(maxvort_S10[t,j+1])-np.abs(maxvort_S10[t,j])
-#     maxit_vort_S10[t] = np.argmax(S10_jumps[t,:])
-#     y_maxit_vort_S10[t] = S10.y[int(maxit_vort_S10[t])]/z_enc_runningmean_S10[t]
-#     maxvort_it_S10[t] = (maxvort_S10[t,int(maxit_vort_S10[t]+1)]+maxvort_S10[t,int(maxit_vort_S10[t])])/2
+    y_vort_S10_saddle[t] = S10.y[np.argmin(meanprob_vort_S10[t,j_min:j_max])+j_min]
+    meanvort_S10_saddle[t] = meanvort_S10[t,np.argmin(np.abs(y_vort_S10_saddle[t]-S10.y))]
+    y_vort_S10_saddle[t] = y_vort_S10_saddle[t]/z_enc_runningmean_S10[t]
 
-# S15_jumps = np.zeros((np.ma.size(S15_vortpdf_interp_runmean,0),S15.y_len))
-# maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# y_maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# maxvort_it_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S15_vortpdf_interp_runmean,0)):
-#     for j in range(S15.z_enc_arg[t],S15.y_len-100):
-#         S15_jumps[t,j] = np.abs(maxvort_S15[t,j+1])-np.abs(maxvort_S15[t,j])
-#     maxit_vort_S15[t] = np.argmax(S15_jumps[t,:])
-#     y_maxit_vort_S15[t] = S15.y[int(maxit_vort_S15[t])]/z_enc_runningmean_S15[t]
-#     maxvort_it_S15[t] = (maxvort_S15[t,int(maxit_vort_S15[t]+1)]+maxvort_S15[t,int(maxit_vort_S15[t])])/2
+y_vort_S15_saddle = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
+meanvort_S15_saddle = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
+for t in range(np.ma.size(S15_vortpdf_interp_runmean,0)):
+    j_min = np.argmin(np.abs(S15.y -0.5 *z_enc_runningmean_S15[t]))
+    j_max = np.argmin(np.abs(S15.y -2.0 *z_enc_runningmean_S15[t]))
 
-# S20_jumps = np.zeros((np.ma.size(S20_vortpdf_interp_runmean,0),S20_1.y_len))
-# maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# y_maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# maxvort_it_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S20_vortpdf_interp_runmean,0)):
-#     for j in range(z_enc_arg_S20[t],S20_1.y_len-100):
-#         S20_jumps[t,j] = np.abs(maxvort_S20[t,j+1])-np.abs(maxvort_S20[t,j])
-#     maxit_vort_S20[t] = np.argmax(S20_jumps[t,:])
-#     y_maxit_vort_S20[t] = S20_1.y[int(maxit_vort_S20[t])]/z_enc_runningmean_S20[t]
-#     maxvort_it_S20[t] = (maxvort_S20[t,int(maxit_vort_S20[t]+1)]+maxvort_S20[t,int(maxit_vort_S20[t])])/2
+    y_vort_S15_saddle[t] = S15.y[np.argmin(meanprob_vort_S15[t,j_min:j_max])+j_min]
+    meanvort_S15_saddle[t] = meanvort_S15[t,np.argmin(np.abs(y_vort_S15_saddle[t]-S15.y))]
+    y_vort_S15_saddle[t] = y_vort_S15_saddle[t]/z_enc_runningmean_S15[t]
 
-# S25_jumps = np.zeros((np.ma.size(S25_vortpdf_interp_runmean,0),S25.y_len))
-# maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# y_maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# maxvort_it_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S25_vortpdf_interp_runmean,0)):
-#     for j in range(S25.z_enc_arg[t],S25.y_len-100):
-#         S25_jumps[t,j] = np.abs(maxvort_S25[t,j+1])-np.abs(maxvort_S25[t,j])
-#     maxit_vort_S25[t] = np.argmax(S25_jumps[t,:])
-#     y_maxit_vort_S25[t] = S25.y[int(maxit_vort_S25[t])]/z_enc_runningmean_S25[t]
-#     maxvort_it_S25[t] = (maxvort_S25[t,int(maxit_vort_S25[t]+1)]+maxvort_S25[t,int(maxit_vort_S25[t])])/2
-    
-# Find sadddle based on a specified jump in maxvort
+y_vort_S20_saddle = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
+meanvort_S20_saddle = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
+for t in range(np.ma.size(S20_vortpdf_interp_runmean,0)):
+    j_min = np.argmin(np.abs(S20_1.y -0.5 *z_enc_runningmean_S20[t]))
+    j_max = np.argmin(np.abs(S20_1.y -2.0 *z_enc_runningmean_S20[t]))
 
-# maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# y_maxit_vort_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# maxvort_it_S0 = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S0_vortpdf_interp_runmean,0)):
-#     for j in range(0,S0.y_len):
-#         if np.abs(maxvort_S0[t,j+1])-np.abs(maxvort_S0[t,j]) > 0.2:
-#             maxit_vort_S0[t] = j
-#             break
-#     y_maxit_vort_S0[t] = S0.y[int(maxit_vort_S0[t])]/z_enc_runningmean_S0[t]
-#     maxvort_it_S0[t] = (maxvort_S0[t,int(maxit_vort_S0[t]+1)]+maxvort_S0[t,int(maxit_vort_S0[t])])/2
+    y_vort_S20_saddle[t] = S20_1.y[np.argmin(meanprob_vort_S20[t,j_min:j_max])+j_min]
+    meanvort_S20_saddle[t] = meanvort_S20[t,np.argmin(np.abs(y_vort_S20_saddle[t]-S20_1.y))]
+    y_vort_S20_saddle[t] = y_vort_S20_saddle[t]/z_enc_runningmean_S20[t]
 
-# maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# y_maxit_vort_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# maxvort_it_S05 = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S05_vortpdf_interp_runmean,0)):
-#     for j in range(S05.z_if_arg[t],S05.y_len):
-#         if np.abs(maxvort_S05[t,j+1])-np.abs(maxvort_S05[t,j]) > 0.1:
-#             maxit_vort_S05[t] = j
-#             break
-#     y_maxit_vort_S05[t] = S05.y[int(maxit_vort_S05[t])]/z_enc_runningmean_S05[t]
-#     maxvort_it_S05[t] = (maxvort_S05[t,int(maxit_vort_S05[t]+1)]+maxvort_S05[t,int(maxit_vort_S05[t])])/2
+y_vort_S25_saddle = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
+meanvort_S25_saddle = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
+for t in range(np.ma.size(S25_vortpdf_interp_runmean,0)):
+    j_min = np.argmin(np.abs(S25.y -0.5 *z_enc_runningmean_S25[t]))
+    j_max = np.argmin(np.abs(S25.y -2.0 *z_enc_runningmean_S25[t]))
 
-# maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# y_maxit_vort_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# maxvort_it_S10 = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S10_vortpdf_interp_runmean,0)):
-#     for j in range(S10.z_enc_arg[t],S10.y_len):
-#         if np.abs(maxvort_S10[t,j+1])-np.abs(maxvort_S10[t,j]) > 0.1:
-#             maxit_vort_S10[t] = j
-#             break
-#     y_maxit_vort_S10[t] = S10.y[int(maxit_vort_S10[t])]/z_enc_runningmean_S10[t]
-#     maxvort_it_S10[t] = (maxvort_S10[t,int(maxit_vort_S10[t]+1)]+maxvort_S10[t,int(maxit_vort_S10[t])])/2
+    y_vort_S25_saddle[t] = S25.y[np.argmin(meanprob_vort_S25[t,j_min:j_max])+j_min]
+    meanvort_S25_saddle[t] = meanvort_S25[t,np.argmin(np.abs(y_vort_S25_saddle[t]-S25.y))]
+    y_vort_S25_saddle[t] = y_vort_S25_saddle[t]/z_enc_runningmean_S25[t]
 
-# maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# y_maxit_vort_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# maxvort_it_S15 = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S15_vortpdf_interp_runmean,0)):
-#     for j in range(0,S15.y_len):
-#         if np.abs(maxvort_S15[t,j+1])-np.abs(maxvort_S15[t,j]) > 0.2:
-#             maxit_vort_S15[t] = j
-#             break
-#     y_maxit_vort_S15[t] = S15.y[int(maxit_vort_S15[t])]/z_enc_runningmean_S15[t]
-#     maxvort_it_S15[t] = (maxvort_S15[t,int(maxit_vort_S15[t]+1)]+maxvort_S15[t,int(maxit_vort_S15[t])])/2
-    
-# maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# y_maxit_vort_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# maxvort_it_S20 = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S20_vortpdf_interp_runmean,0)):
-#     for j in range(0,S20_1.y_len):
-#         if np.abs(maxvort_S20[t,j+1])-np.abs(maxvort_S20[t,j]) > 0.3:
-#             maxit_vort_S20[t] = j
-#             break
-#     y_maxit_vort_S20[t] = S20_1.y[int(maxit_vort_S20[t])]/z_enc_runningmean_S20[t]
-#     maxvort_it_S20[t] = (maxvort_S20[t,int(maxit_vort_S20[t]+1)]+maxvort_S20[t,int(maxit_vort_S20[t])])/2
 
-# maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# y_maxit_vort_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# maxvort_it_S25 = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# for t in range(0,np.ma.size(S25_vortpdf_interp_runmean,0)):
-#     for j in range(0,S25.y_len):
-#         if np.abs(maxvort_S25[t,j+1])-np.abs(maxvort_S25[t,j]) > 0.2:
-#             maxit_vort_S25[t] = j
-#             break
-#     y_maxit_vort_S25[t] = S25.y[int(maxit_vort_S25[t])]/z_enc_runningmean_S25[t]
-#     maxvort_it_S25[t] = (maxvort_S25[t,int(maxit_vort_S25[t]+1)]+maxvort_S25[t,int(maxit_vort_S25[t])])/2
-    
+# In[11]:
 
-# Find saddle as point where maxprob has a minimum
-
-# y_vort_S0_saddle = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# maxvort_S0_saddle = np.zeros(np.ma.size(S0_vortpdf_interp_runmean,0))
-# for t in range(np.ma.size(S0_vortpdf_interp_runmean,0)):
-#     y_vort_S0_saddle[t] = S0.y[np.argmin(maxprob_vort_S0[t,:-100])]
-#     maxvort_S0_saddle[t] = maxvort_S0[t,np.argmin(np.abs(y_vort_S0_saddle[t]-S0.y))]
-#     y_vort_S0_saddle[t] = y_vort_S0_saddle[t]/z_enc_runningmean_S0[t]
-
-# y_vort_S05_saddle = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# maxvort_S05_saddle = np.zeros(np.ma.size(S05_vortpdf_interp_runmean,0))
-# for t in range(np.ma.size(S05_vortpdf_interp_runmean,0)):
-#     y_vort_S05_saddle[t] = S05.y[np.argmin(maxprob_vort_S05[t,:-100])]
-#     maxvort_S05_saddle[t] = maxvort_S05[t,np.argmin(np.abs(y_vort_S05_saddle[t]-S05.y))]
-#     y_vort_S05_saddle[t] = y_vort_S05_saddle[t]/z_enc_runningmean_S05[t]
-    
-# y_vort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# maxvort_S10_saddle = np.zeros(np.ma.size(S10_vortpdf_interp_runmean,0))
-# for t in range(np.ma.size(S10_vortpdf_interp_runmean,0)):
-#     y_vort_S10_saddle[t] = S10.y[np.argmin(maxprob_vort_S10[t,:-100])]
-#     maxvort_S10_saddle[t] = maxvort_S10[t,np.argmin(np.abs(y_vort_S10_saddle[t]-S10.y))]
-#     y_vort_S10_saddle[t] = y_vort_S10_saddle[t]/z_enc_runningmean_S10[t]
-
-# y_vort_S15_saddle = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# maxvort_S15_saddle = np.zeros(np.ma.size(S15_vortpdf_interp_runmean,0))
-# for t in range(np.ma.size(S15_vortpdf_interp_runmean,0)):
-#     y_vort_S15_saddle[t] = S15.y[np.argmin(maxprob_vort_S15[t,:-100])]
-#     maxvort_S15_saddle[t] = maxvort_S15[t,np.argmin(np.abs(y_vort_S15_saddle[t]-S15.y))]
-#     y_vort_S15_saddle[t] = y_vort_S15_saddle[t]/z_enc_runningmean_S15[t]
-    
-# y_vort_S20_saddle = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# maxvort_S20_saddle = np.zeros(np.ma.size(S20_vortpdf_interp_runmean,0))
-# for t in range(np.ma.size(S20_vortpdf_interp_runmean,0)):
-#     y_vort_S20_saddle[t] = S20_1.y[np.argmin(maxprob_vort_S20[t,:-100])]
-#     maxvort_S20_saddle[t] = maxvort_S20[t,np.argmin(np.abs(y_vort_S20_saddle[t]-S20_1.y))]
-#     y_vort_S20_saddle[t] = y_vort_S20_saddle[t]/z_enc_runningmean_S20[t]
-
-# y_vort_S25_saddle = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# maxvort_S25_saddle = np.zeros(np.ma.size(S25_vortpdf_interp_runmean,0))
-# for t in range(np.ma.size(S25_vortpdf_interp_runmean,0)):
-#     y_vort_S25_saddle[t] = S25.y[np.argmin(maxprob_vort_S25[t,:-100])]
-#     maxvort_S25_saddle[t] = maxvort_S25[t,np.argmin(np.abs(y_vort_S25_saddle[t]-S25.y))]
-#     y_vort_S25_saddle[t] = y_vort_S25_saddle[t]/z_enc_runningmean_S25[t]
-    
 
 # concatenate over time
 
@@ -502,11 +422,17 @@ time = np.concatenate((S20_1.z_enc/L0,S20_2.z_enc/L0))
 z_if = np.concatenate((S20_1.z_if/S20_1.z_enc,S20_2.z_if/S20_2.z_enc))
 z_ig = np.concatenate((S20_1.z_ig/S20_1.z_enc,S20_2.z_ig/S20_2.z_enc))
 
-#####################################################################
+
+# In[13]:
+
+
 # Plot
 
-blues = matplotlib.cm.get_cmap('Blues')
-greens = matplotlib.cm.get_cmap('Greens')
+#blues = matplotlib.cm.get_cmap('Blues')
+
+colors = []
+for value in [0.1,0.25,0.40,0.55,0.7,0.85]:
+    colors.append(matplotlib.cm.get_cmap('plasma_r')(value))
 
 f, (ax1,ax2) = plt.subplots(1,2,figsize=(10,5))
 ax1.grid(True,linewidth=1.5)
@@ -515,44 +441,82 @@ ax1.tick_params(bottom=False,left=False)
 ax2.tick_params(bottom=False,left=False)
 ax1.set_ylim(1,1.6)
 ax1.set_xlim(15,30)
-ax2.set_ylim(-2.2,0)
+ax2.set_ylim(-2,0)
 ax2.set_xlim(15,30)
-ax1.plot(S0.z_enc[1:-1]/L0,y_saddle_S0,c=blues(0.5))
-ax1.plot(S05.z_enc[1:-1]/L0,y_saddle_S05,c=blues(0.6))
-ax1.plot(S10.z_enc[1:-1]/L0,y_saddle_S10,c=blues(0.7))
-ax1.plot(S15.z_enc[1:-1]/L0,y_saddle_S15,c=blues(0.8))
-ax1.plot(time[1:-1],y_saddle_S20,c=blues(0.9))
-ax1.plot(S25.z_enc[1:-1]/L0,y_saddle_S25,c=blues(1.0))
-# ax1.plot(S0.z_enc[1:-1]/L0,y_maxit_vort_S0,c=blues(0.5))
-# ax1.plot(S05.z_enc[1:-1]/L0,y_maxit_vort_S05,c=blues(0.6))
-# ax1.plot(S10.z_enc[1:-1]/L0,y_maxit_vort_S10,c=blues(0.7))
-# ax1.plot(S15.z_enc[1:-1]/L0,y_maxit_vort_S15,c=blues(0.8))
-# ax1.plot(time[1:-1],y_maxit_vort_S20,c=blues(0.9))
-# ax1.plot(S25.z_enc[1:-1]/L0,y_maxit_vort_S25,c=blues(1.0))
-#ax1.plot(time[1:-1],runningmean(z_ig,1),c=blues(0.9),ls=':',label=r'$z_{i,g}/z_\mathrm{enc}$')
-#ax1.plot(S0.z_enc[1:-1]/L0,runningmean(S0.z_if/S0.z_enc,1),c=blues(0.5),ls=':',label=r'$z_{i,f}/z_\mathrm{enc}$')
-ax2.plot(S0.z_enc[1:-1]/L0,x_saddle_S0,c=blues(0.5),label=r'$Fr_0=0$')
-ax2.plot(S05.z_enc[1:-1]/L0,x_saddle_S05,c=blues(0.6),label=r'$Fr_0=5$')
-ax2.plot(S10.z_enc[1:-1]/L0,x_saddle_S10,c=blues(0.7),label=r'$Fr_0=10$')
-ax2.plot(S15.z_enc[1:-1]/L0,x_saddle_S15,c=blues(0.8),label=r'$Fr_0=15$')
-ax2.plot(time[1:-1],x_saddle_S20,c=blues(0.9),label=r'$Fr_0=20$')
-ax2.plot(S25.z_enc[1:-1]/L0,x_saddle_S25,c=blues(1.0),label=r'$Fr_0=25$')
-# ax2.plot(S0.z_enc[1:-1]/L0,maxvort_it_S0,c=blues(0.5),label=r'$Fr_0=0$')
-# ax2.plot(S05.z_enc[1:-1]/L0,maxvort_it_S05,c=blues(0.6),label=r'$Fr_0=5$')
-# ax2.plot(S10.z_enc[1:-1]/L0,maxvort_it_S10,c=blues(0.7),label=r'$Fr_0=10$')
-# ax2.plot(S15.z_enc[1:-1]/L0,maxvort_it_S15,c=blues(0.8),label=r'$Fr_0=15$')
-# ax2.plot(time[1:-1],maxvort_it_S20,c=blues(0.9),label=r'$Fr_0=20$')
-# ax2.plot(S25.z_enc[1:-1]/L0,maxvort_it_S25,c=blues(1.0),label=r'$Fr_0=25$')
+ax1.plot(S0.z_enc[1:-1]/L0, y_vort_S0_saddle,   c=colors[0])
+ax1.plot(S05.z_enc[1:-1]/L0,y_vort_S05_saddle,  c=colors[1])
+ax1.plot(S10.z_enc[1:-1]/L0,y_vort_S10_saddle,  c=colors[2])
+ax1.plot(S15.z_enc[1:-1]/L0,y_vort_S15_saddle,  c=colors[3])
+ax1.plot(time[1:-1],        y_vort_S20_saddle,  c=colors[4])
+ax1.plot(S25.z_enc[1:-1]/L0,y_vort_S25_saddle,  c=colors[5])
+ax2.plot(S0.z_enc[1:-1]/L0, meanvort_S0_saddle,  c=colors[0], label=r'$Fr_0=0$')
+ax2.plot(S05.z_enc[1:-1]/L0,meanvort_S05_saddle, c=colors[1], label=r'$Fr_0=5$')
+ax2.plot(S10.z_enc[1:-1]/L0,meanvort_S10_saddle, c=colors[2], label=r'$Fr_0=10$')
+ax2.plot(S15.z_enc[1:-1]/L0,meanvort_S15_saddle, c=colors[3], label=r'$Fr_0=15$')
+ax2.plot(time[1:-1],        meanvort_S20_saddle, c=colors[4], label=r'$Fr_0=20$')
+ax2.plot(S25.z_enc[1:-1]/L0,meanvort_S25_saddle, c=colors[5], label=r'$Fr_0=25$')
 ax1.set_xlabel(r'$z_{enc}/L_0$')
 ax2.set_xlabel(r'$z_{enc}/L_0$')
-ax1.set_ylabel(r'$z_\mathrm{saddle}/z_{enc}$')
+ax1.set_ylabel(r'$z_\omega/z_{enc}$')
 ax2.set_ylabel(r'$\mathrm{log}_{10}(\omega^2/\omega_0^2)$')
 ax1.set_title('(a)',fontsize=24,loc='left')
 ax2.set_title('(b)',fontsize=24,loc='left')
-#ax1.legend(loc='best',fontsize=20,handlelength=1,borderaxespad=0.2)
 ax2.legend(loc='best',fontsize=18,handlelength=1,borderaxespad=0.2,ncol=2,columnspacing=1)
 plt.tight_layout()
-plt.savefig(opath+'pdfs_saddle_point_maxgrad.pdf',bbox_inches='tight')
+plt.savefig(opath+'pdfs_saddle_point_mean.pdf',bbox_inches='tight')
 plt.show()
+
+
+# In[14]:
+
+
+np.mean(meanvort_S0_saddle)
+
+
+# In[15]:
+
+
+np.mean(meanvort_S05_saddle)
+
+
+# In[19]:
+
+
+np.mean(meanvort_S10_saddle)
+
+
+# In[20]:
+
+
+np.mean(meanvort_S15_saddle)
+
+
+# In[21]:
+
+
+np.mean(meanvort_S20_saddle)
+
+
+# In[22]:
+
+
+np.mean(meanvort_S25_saddle)
+
+
+# In[5]:
+
+
+np.sqrt((10**(-0.46751851045102605))*(ceps*B0/nu))
+
+
+# In[16]:
+
+
+np.mean(y_vort_S0_saddle)
+
+
+# In[ ]:
+
+
 
 
